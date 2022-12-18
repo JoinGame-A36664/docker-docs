@@ -23,7 +23,7 @@ root@adk:/# docker run -it --rm busybox
 Mặc định khi cài đặt xong, Docker sẽ tạo ra 3 card mạng mặc định là:
 - bridge
 - host
-- only.
+- none.
 
 - Tương ứng với các nền tảo ảo hóa khác, ta có các chế độ card mạng của docker so với các nền tảng đấy là:
 
