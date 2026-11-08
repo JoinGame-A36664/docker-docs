@@ -1,3 +1,5 @@
+> **Cập nhật (2026):** trong bài này đã đổi `ubuntu:14.04` (hết hỗ trợ từ 2019) thành `ubuntu:24.04`, đổi `MAINTAINER` (deprecated) thành `LABEL maintainer=...`, và thêm cờ `-y` cho `apt-get install apache2` (bản gốc thiếu `-y` nên `docker build` sẽ dừng ở bước hỏi xác nhận và báo lỗi). Cú pháp `ENV KEY value` trong bài vẫn chạy được nhưng nên viết `ENV KEY=value`. Xem thêm các thực hành tốt ở bài [Dockerfile](docker-dockerfile.md) (mục 3.22) và bản script đã cập nhật [`scripts/dockerfile.sh`](../../scripts/dockerfile.sh).
+
 # Thực hành dockerfile
 
 Dockerfile giúp bạn rất nhiều trong quá trình làm việc với docker. Dockerfile có cấu trúc thành các phần rõ ràng.
@@ -6,17 +8,17 @@ Dưới đây là một kiến trúc các thành phần cơ bản trong một `d
 
 - Đầu tiên cần chỉ định image gốc được sử dụng trong quá trình tạo image mới bằng dockerfile
 ```sh
-FROM ubuntu:14.04
+FROM ubuntu:24.04
 ```
 
 - Bổ sung thông tin về người tạo ra dockerfile này
 ```sh
-MAINTAINER tannt
+LABEL maintainer="tannt"
 ```
 
 - Chạy các lệnh sẽ cài đặt bổ sung gói cho image, giả sử tôi muốn tạo image apache.
 ```sh
-RUN apt-get update -y && apt-get install apache2 && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y apache2 && apt-get clean && rm -rf /var/lib/apt/lists/*
 ```
 
 - Chỉ định một số cấu hình biến môi trường để apache chạy trong container:
@@ -51,9 +53,9 @@ Bây giờ ta sẽ tổng hợp các thành phần rời rạc ở trên thành 
 mkdir -p apache && cd apache
 
 cat << EOF > dockerfile
-FROM ubuntu:14.04
+FROM ubuntu:24.04
 
-MAINTAINER tannt
+LABEL maintainer="tannt"
 
 RUN apt-get update && apt-get install -y apache2 && apt-get clean && rm -rf /var/lib/apt/lists/*
 

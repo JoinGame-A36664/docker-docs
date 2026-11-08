@@ -1,5 +1,10 @@
 # Sử dụng plugin rexray trong Docker sử dụng ảo hóa VirtualBox
 
+> **Cập nhật (2026): bài này chỉ còn giá trị tham khảo lịch sử.** Dự án REX-Ray (do nhóm `{code}` của EMC/Dell khởi xướng) đã **ngừng phát triển (archived)**, nên địa chỉ cài `https://rexray.io/install` không còn được duy trì và nhiều khả năng sẽ không chạy được. Hãy kiểm tra lại trước khi chạy lệnh `curl ... | sh` bên dưới, và không nên chạy script từ nguồn không còn được bảo trì. Những khái niệm trong bài (volume driver, tích hợp với hệ thống lưu trữ ngoài) vẫn đúng. Để làm điều tương tự hiện nay:
+> - Dùng volume driver `local` với tùy chọn NFS / CIFS (xem mục bổ sung ở bài [Volume trong Docker](docker-volume.md)).
+> - Với Kubernetes / Swarm trong đám mây: dùng **CSI driver** của nhà cung cấp (AWS EBS, Azure Disk, GCE PD, Ceph...).
+> - Docker Managed Plugin: `docker plugin install <plugin>` (ví dụ plugin của các hãng lưu trữ), thay cho việc cài dịch vụ riêng như REX-Ray.
+
 ____
 
 # Mục lục

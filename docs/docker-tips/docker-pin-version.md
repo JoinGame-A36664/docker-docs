@@ -63,6 +63,13 @@ ____
         # dictates (at least for me), that minor version pinning works great in practice.
 
 
+
+> **Bổ sung (2026):** ví dụ trong bài dùng Node 8 (nay đã quá cũ), nguyên tắc thì không đổi. Cập nhật theo thực tế hiện nay:
+> - Dùng bản đang được hỗ trợ dài hạn (LTS): ví dụ `FROM node:22-alpine`, `FROM python:3.12-slim`, `FROM postgres:16`. Vào trang image trên Docker Hub để xem tag nào đang được duy trì.
+> - Muốn bản build **lặp lại được tuyệt đối** thì ghim thêm **digest**: `FROM node:22-alpine@sha256:<digest>`. Công cụ **Dependabot** hoặc **Renovate** có thể tự gửi pull request khi có digest / bản vá mới.
+> - Ghim cứng không có nghĩa là quên cập nhật: bản vá bảo mật vẫn cần được áp dụng định kỳ. Hãy build lại image định kỳ và quét lỗ hổng (`docker scout`, Trivy).
+> - Áp dụng tương tự với `image:` trong file compose, và với các gói cài trong Dockerfile (`pip install flask==3.0.3`, `npm ci` với lockfile).
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

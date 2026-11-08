@@ -130,8 +130,10 @@ ____
             docker run -d \
               -it \
               --name devtest \
-              --mount type=bind,source=myvol2,target=/app \
+              --mount type=bind,source="$(pwd)"/target,target=/app \
               nginx:latest
+
+        (Bản gốc ghi `source=myvol2`, đó là tên volume. Với bind mount, `source` phải là **đường dẫn tuyệt đối** tới thư mục / file trên host, và thư mục đó phải tồn tại, nếu không `--mount` báo lỗi. Với cờ `-v`, Docker lại tự tạo thư mục thiếu.)
 
 - ### <a name="use-tmpfs">3.7 Cách sử dụng tmpfs mounts</a>
 
@@ -143,9 +145,33 @@ ____
             docker run -d \
               -it \
               --name devtest \
-              --mount type=tmpfs,source=myvol2,target=/app \
+              --mount type=tmpfs,target=/app \
               nginx:latest
+
+        (Bản gốc có thêm `source=myvol2`, nhưng `tmpfs` nằm trong RAM nên **không có `source`**; thêm vào sẽ bị báo lỗi. Có thể giới hạn dung lượng bằng `tmpfs-size=64m`.)
               
 ____
 
 # <a name="content-others">Các nội dung khác</a>
+
+# Bổ sung 2026: volume trong Compose, backup, và lưu ý nền tảng
+
+- **Volume trong Docker Compose**: khai báo `volumes:` ở cấp cao nhất rồi gắn vào service (xem ví dụ trong bài [Docker Compose](docker-compose.md)). Compose đặt tên volume theo dạng `<tên project>_<tên volume>`. `docker compose down` **không** xóa volume; chỉ `docker compose down -v` mới xóa.
+- **Sao lưu một named volume** bằng một container tạm, nén dữ liệu ra thư mục hiện tại của host:
+
+        docker run --rm -v myvol2:/data -v "$(pwd)":/backup alpine \
+          tar czf /backup/myvol2-backup.tar.gz -C /data .
+
+  Khôi phục vào volume mới:
+
+        docker volume create myvol2-restored
+        docker run --rm -v myvol2-restored:/data -v "$(pwd)":/backup alpine \
+          tar xzf /backup/myvol2-backup.tar.gz -C /data
+
+- **Cú pháp `-v` và `--mount`**: `-v ten:/duong/dan` ngắn gọn, `--mount type=volume,source=ten,target=/duong/dan` rõ ràng hơn và báo lỗi khi sai. Docker khuyên dùng `--mount` trong tài liệu, còn trong thực tế `-v` vẫn rất phổ biến.
+- **Quyền truy cập (permission)**: lỗi `Permission denied` khi ghi vào bind mount thường do user bên trong container (UID) khác chủ sở hữu thư mục trên host. Xử lý: chạy container với `--user "$(id -u):$(id -g)"` hoặc `chown` lại thư mục cho đúng UID.
+- **Windows / macOS**: bind mount từ ổ Windows vào container chậm hơn đáng kể so với named volume. Với Docker Desktop + WSL 2, nên để mã nguồn **bên trong hệ thống file của WSL** (`\\wsl$\Ubuntu\home\...`) thay vì `C:\...`. Database nên luôn dùng named volume.
+- **Volume plugin**: dùng khi cần lưu trữ ngoài (NFS, S3, đám mây). Ví dụ volume NFS không cần plugin:
+
+        docker volume create --driver local \
+          --opt type=nfs --opt o=addr=192.168.1.10,rw --opt device=:/export/data nfs-vol

@@ -1,0 +1,4 @@
+# Script shell và cấu hình nginx phải dùng xuống dòng LF, nếu không sẽ lỗi khi chạy trong container / Linux
+*.sh   text eol=lf
+*.conf text eol=lf
+Dockerfile text eol=lf

@@ -1,4 +1,9 @@
 # Mục lục tài liệu
+
+> **Bản cập nhật 2026.** Nội dung và cách trình bày của tài liệu gốc (ghi chép năm 2017-2018) được giữ nguyên. Những chỗ đã lỗi thời được sửa trực tiếp hoặc ghi chú bằng khối **"Cập nhật (2026)"** ngay tại chỗ đó. Có thêm bài mới và một dự án thực hành:
+> - [Những điều đã thay đổi từ 2017 đến nay](/docs/docker-nangcao/docker-nhung-dieu-moi.md): bảng đối chiếu cách cũ và cách mới, đọc trước nếu bạn đã quen tài liệu cũ.
+> - [Dự án thực hành giai đoạn đầu: Sổ lưu bút Docker](/practice/README.md): 8 bước từ `docker run` đến Docker Compose.
+> - [Kubernetes hiện nay: kind, kubeadm, Deployment đầu tiên](/docs/docker-nangcao/docker-kubernetes-hien-nay.md).
 ## Giới thiệu docker
 [Cài đặt docker](/docs/docker-5m/01.Caidatdocker.md)
 
@@ -61,9 +66,19 @@ Tài liệu cài đặt docker để chuẩn bị môi trường tìm hiểu lý
 
 [sử dụng supervisor](/docs/docker-nangcao/docker-supervisor.md)
 
-[sử dụng volume](/docs/docker-nangcao/docker-volume.md.md)
+[sử dụng volume](/docs/docker-nangcao/docker-volume.md)
+
+[Kubernetes hiện nay: kind, kubeadm, Deployment đầu tiên (bài mới)](/docs/docker-nangcao/docker-kubernetes-hien-nay.md)
+
+[Những điều đã thay đổi trong thế giới Docker từ 2017 đến nay (bài mới)](/docs/docker-nangcao/docker-nhung-dieu-moi.md)
 
 ## 3. Vài Tips về docker
 
 <span style="color:yellow">Xem trong source :))</span>
+
+Mục lục các tips: [docs/docker-tips/readme.md](/docs/docker-tips/readme.md)
+
+## 4. Thực hành: Sổ lưu bút Docker (bài mới)
+
+[Dự án thực hành giai đoạn đầu: nginx + Flask + Redis, 8 bước từ `docker run` đến Docker Compose](/practice/README.md)
 ---

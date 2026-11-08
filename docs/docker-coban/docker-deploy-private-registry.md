@@ -1,5 +1,7 @@
 # 1. Thực hành triển khai Private Docker Registry
 
+> **Cập nhật (2026):** bài gốc dùng CentOS 7 (`yum`), `ubuntu:16.04` và cờ `--link`, đều đã cũ. Khi làm theo bài: trên Ubuntu/Debian thay `yum install -y httpd-tools` bằng `sudo apt-get install -y apache2-utils` (vẫn có lệnh `htpasswd`); trên Rocky/Alma dùng `dnf install -y httpd-tools`; thay `ubuntu:16.04` bằng `ubuntu:24.04`; thay `--link registry` bằng một user-defined network (`docker network create reg-net`, rồi `--network reg-net` cho cả hai container) và trong cấu hình nginx gọi `registry:5000` theo tên. Dòng `ssl on;` trong cấu hình nginx đã deprecated từ nginx 1.15.0 và bị gỡ hẳn ở nginx 1.25.1, hãy viết `listen 443 ssl;`. Nếu chỉ cần registry nội bộ đơn giản có giao diện web và quét lỗ hổng, cân nhắc **Harbor**.
+
 ____
 
 # Mục lục

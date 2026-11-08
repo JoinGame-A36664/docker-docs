@@ -17,6 +17,13 @@ ____
 
 - Ví dụ: thuộc tính `deploy` bị bỏ qua bởi `Docker Compose` và `depends_on` bị bỏ qua bởi `docker stack` . Có những khác biệt khác nữa. Bạn có thể tìm thấy chúng bằng cách kiểm tra [tại đây](https://docs.docker.com/compose/compose-file/).
 
+
+> **Bổ sung (2026):** sau khi Compose chuyển sang Compose Specification (v2) thì ranh giới đã nhạt hơn:
+> - `docker compose up` (v2) **có đọc** `deploy.resources` (giới hạn CPU/RAM) và `deploy.replicas`, không còn "bỏ qua toàn bộ `deploy`" như bản gốc.
+> - Các phần `deploy.update_config`, `deploy.placement`, ... vẫn chỉ có tác dụng với `docker stack deploy` (Swarm).
+> - `docker stack deploy` **không build image**: phần `build:` bị bỏ qua, bạn phải build và push image lên registry trước.
+> - Quy tắc chọn: chạy trên **một máy** (dev, máy chủ nhỏ) → `docker compose`; chạy trên **cụm nhiều máy với Swarm** → `docker stack`. Với cụm lớn ngày nay đa phần chọn Kubernetes.
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

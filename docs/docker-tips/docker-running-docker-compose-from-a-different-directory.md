@@ -12,10 +12,16 @@ ____
 
 - Điều này có nghĩa là bạn có thể chạy:
 
-        docker-compose -f /tmp/myproject/docker-compose.yml up -d
+        docker compose -f /tmp/myproject/docker-compose.yml up -d
 
     từ bất cứ nơi nào trong `file system` của bạn và mọi việc sẽ làm việc như bình thường.
     
+
+> **Bổ sung (2026):** lệnh Compose hiện nay là `docker compose` (bản trong bài gốc là `docker-compose` của Compose v1). Một số cờ liên quan:
+> - `--project-directory /duong/dan`: đặt thư mục gốc để tính đường dẫn tương đối (như `build: .`, `./data`) mà không cần `cd`.
+> - `-p ten_project`: đặt tên project. Tên này là tiền tố của container, network, volume; hai project khác tên có thể chạy song song cùng một file compose.
+> - `--env-file duong/dan/.env`: dùng file biến môi trường khác file `.env` mặc định.
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

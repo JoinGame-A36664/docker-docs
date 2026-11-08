@@ -1,24 +1,35 @@
-version: '2'
-
+# Compose Specification (Compose v2). Chay: docker compose up -d
+# Da bo khoa "version:" (khong con can thiet), dung mysql:8.0 va named volume.
 services:
    db:
-     image: mysql:5.7
+     image: mysql:8.0
      volumes:
-       - ./data:/var/lib/mysql
+       - db_data:/var/lib/mysql
      restart: always
      environment:
        MYSQL_ROOT_PASSWORD: wordpress
        MYSQL_DATABASE: wordpress
        MYSQL_USER: wordpress
        MYSQL_PASSWORD: wordpress
+     healthcheck:
+       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pwordpress"]
+       interval: 5s
+       timeout: 3s
+       retries: 20
 
    wordpress:
      depends_on:
-       - db
+       db:
+         condition: service_healthy
      image: wordpress:latest
      ports:
        - "8000:80"
      restart: always
      environment:
        WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+
+volumes:
+   db_data:
