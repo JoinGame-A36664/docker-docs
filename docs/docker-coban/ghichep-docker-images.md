@@ -1,5 +1,7 @@
 # docker mirror (docker images)
 
+> **Cập nhật (2026):** các điểm đã đổi so với bản gốc, sẽ được chú thích ngay tại chỗ: (1) `Docker Trusted Registry` không còn do Docker bán; (2) tạo image bằng `Dockerfile` (nay là build bằng BuildKit) vẫn là cách chuẩn; (3) cấu hình registry không bảo mật dùng `/etc/docker/daemon.json` thay cho `/etc/default/docker`; (4) nên đăng nhập Docker Hub bằng **Personal Access Token** thay vì mật khẩu; (5) image giờ thường là **đa kiến trúc** (amd64, arm64) và có thể quét lỗ hổng bằng `docker scout`.
+
 ## Một số chú ý
 
 - Docker image: là template để tạo ra các container. Tức là các container được chạy từ các images này.
@@ -13,11 +15,14 @@
 - Các image là dạng file-chỉ-đọc (read only file). Khi tạo một container mới, trong mỗi container sẽ tạo thêm một lớp có-thể-ghi được gọi là container-layer. Các thay đổi trên container như thêm, sửa, xóa file... sẽ được ghi trên lớp này. Do vậy, từ một image ban đầu, ta có thể tạo ra nhiều máy con mà chỉ tốn rất ít dung lượng ổ đĩa.
 - Docker cung cấp 3 công cụ phân tán giúp chúng ta lưu trữ và quản lý các Docker image. Để tự dựng một private registry và lưu trữ các private image chúng ta có thể sử dụng một trong các công cụ sau:
   - Docker Registry: một open source image distribution tool giúp lưu trữ và quản lý image
-  - Docker Trusted Registry: một công cụ trả phí, nó khác với Docker Registry là có giao diện quản lý và cung cấp một số tính năng bảo mật (nghe bảo thế)
+  - Docker Trusted Registry: một công cụ trả phí, nó khác với Docker Registry là có giao diện quản lý và cung cấp một số tính năng bảo mật (nghe bảo thế). (Cập nhật: DTR cùng Docker Enterprise đã được Mirantis mua lại năm 2019 và đổi tên thành Mirantis Secure Registry. Hiện nay các lựa chọn tự dựng phổ biến là **Harbor** (có giao diện, phân quyền, quét lỗ hổng), hoặc dùng dịch vụ có sẵn như GitHub Container Registry `ghcr.io`, Amazon ECR, Google Artifact Registry, Azure Container Registry.)
   - Docker Hub: đây là một dịch vụ khi mà bạn không muốn tự quản lý registry. Cung cấp public và private image repository. Mặc định Docker Client sẽ sử dụng Docker Hub nếu không có registry nào được cấu hình. Trên này có rất nhiều các image offcial của các phần mềm như nginx, mongodb, mysql, jenkins,..
 
 - Quy tắt đặt tên images: `[REPOSITORY[:TAG]]`
   - Trong đó, TAG là phiên bản của images. Mặc định, khi không khai báo tag thì docker sẽ hiểu tag là `latest`
+  - (Bổ sung 2026) `latest` chỉ là một cái tên tag bình thường, **không** có nghĩa là "mới nhất". Trong môi trường thật nên gắn tag theo phiên bản (`1.4.2`) hoặc mã commit, và ghim tag cụ thể khi `FROM`.
+  - Tên đầy đủ có dạng `[REGISTRY/][NAMESPACE/]REPOSITORY[:TAG][@DIGEST]`, ví dụ `ghcr.io/user/myapp:1.0`. Digest (`@sha256:...`) xác định chính xác một image duy nhất, không đổi theo thời gian.
+  - (Bổ sung 2026) Một tag có thể trỏ tới **nhiều kiến trúc** (manifest list). Máy Intel kéo bản `amd64`, máy Apple Silicon hoặc Raspberry Pi kéo bản `arm64` tự động. Xem bằng `docker buildx imagetools inspect nginx:alpine`.
 
 ## 1. Một số lệnh làm việc với images
 
@@ -54,6 +59,7 @@
 	```sh
 	docker search ubuntu:14.04
 	```
+	(Ubuntu 14.04 trong ví dụ này đã hết hỗ trợ từ 2019; hãy thay bằng `ubuntu:24.04` khi thực hành. Ngoài ra `docker search` chỉ liệt kê, để biết image đáng tin thì ưu tiên các nhãn **Docker Official Image** và **Verified Publisher** trên Docker Hub.)
 
 
 
@@ -219,6 +225,7 @@
 	```
 
 ## 2. Push - Pull images using Docker Hub.
+- (Cập nhật 2026) Khi `docker login`, ô "Password" nên điền **Personal Access Token** tạo tại Docker Hub (Account settings > Personal access tokens) thay vì mật khẩu thật, và chỉ cấp quyền cần thiết. Trên máy dùng chung / CI có thể dùng `echo $TOKEN | docker login -u USER --password-stdin` để tránh lộ token trong lịch sử lệnh.
 - Để push 1 image vừa tạo lên hub để chia sẻ với mọi người, thì ta cần tạo 1 tài khoản docker hub và login vào bằng câu lệnh
 ```sh
 docker login
@@ -255,4 +262,12 @@ DOCKER_OPTS="--insecure-registry 172.16.69.239:5000"
 ```sh
 service docker restart
 ```
+
+> **Cập nhật (2026):** file `/etc/default/docker` và biến `DOCKER_OPTS` chỉ có tác dụng với cách quản lý dịch vụ kiểu cũ (upstart/init.d). Với Docker chạy bằng systemd (mặc định hiện nay) hãy khai báo trong `/etc/docker/daemon.json`:
+> ```json
+> {
+>   "insecure-registries": ["172.16.69.239:5000"]
+> }
+> ```
+> rồi khởi động lại: `sudo systemctl restart docker`. Cách này chỉ dùng cho lab trong mạng nội bộ; môi trường thật nên bật TLS cho registry (xem bài [Private Registry](docker-deploy-private-registry.md)).
 - Các thao tác pull và push image tương tự ở như là pull, push ở docker hub.

@@ -18,7 +18,7 @@ ____
     | Alpine | apk |
     | Arch | pacman |
     | Debian / Ubuntu | apt |
-    | CentOS / RHEL | yum |
+    | CentOS / RHEL (CentOS 7 đã hết hỗ trợ; dùng Rocky/Alma) | yum (nay là dnf) |
     | Fedora | dnf |
     
 
@@ -38,6 +38,9 @@ ____
 - Tôi đã có rất nhiều may mắn chỉ với Google cho "libpq-dev for Alpine" (và tương tự), do đó bạn có thể sử dụng chiến thuật đó khi tìm kiếm tên gói của Alpine khi bạn biết chúng đang có ở phân phối khác.
 
 - Ngoài ra, nếu bạn gặp lỗi "unsatisfiable constraints", điều đó thường có nghĩa là gói mà bạn đang cố gắng cài đặt không tồn tại.
+
+> **Bổ sung (2026):** trong Dockerfile trên Alpine hãy dùng `apk add --no-cache <goi>`: cờ `--no-cache` bỏ qua việc lưu bộ nhớ đệm chỉ mục gói nên image nhỏ hơn và không cần `rm -rf /var/lib/apt/lists/*` như Debian/Ubuntu. Gói build tạm thời có thể cài thành nhóm rồi gỡ: `apk add --no-cache --virtual .build-deps gcc musl-dev && ... && apk del .build-deps`. Ngoài ra Alpine dùng `musl` thay cho `glibc` nên một số gói nhị phân dựng sẵn (ví dụ wheel Python) có thể phải biên dịch lại, nếu gặp rắc rối hãy thử bản `-slim` (Debian) của image.
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

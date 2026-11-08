@@ -1,5 +1,12 @@
 # Network trong Docker.
 
+> **Cập nhật (2026):** phần lý thuyết về `bridge`, `host`, `none`, `overlay`, `macvlan` vẫn đúng. Các điểm cần chú ý khi đọc:
+> - `macvlan` và `ipvlan` **không còn là experimental** (bản gốc ghi "experimental since Docker 1.11"), nay là driver chính thức.
+> - Lệnh `ifconfig`, `route` trong các ví dụ thuộc gói `net-tools` cũ, không có sẵn trên nhiều bản Ubuntu/Debian mới. Dùng `ip a` (thay `ifconfig`), `ip route` (thay `route -n`), `ss -tulpn` (thay `netstat`).
+> - `--link` là cơ chế **legacy**. Ở mục 4 bên dưới, cách nên dùng là tạo **user-defined bridge network**, các container tự phân giải tên nhau (DNS nội bộ của Docker).
+> - Trên **Docker Desktop (Windows/macOS)**, Docker chạy trong một máy ảo nhỏ nên `macvlan` và kết nối trực tiếp tới IP của container từ host **không dùng được** như trên Linux. Hãy dùng `-p` để publish port. Chế độ `--network host` trên Docker Desktop chỉ có từ bản 4.34 (cần bật trong Settings).
+> - Cuối bài có mục "Lưu ý bảo mật: Docker và tường lửa".
+
 ![](https://camo.githubusercontent.com/d2c856d1986260ace4a29c8478e17bba09dacc13/687474703a2f2f692e696d6775722e636f6d2f614e534a3639792e706e67)
 
 Khi chúng ta cài đặt Docker, những thiết lập sau sẽ được thực hiện:
@@ -30,7 +37,7 @@ Mặc định khi cài đặt xong, Docker sẽ tạo ra 3 card mạng mặc đ�
 | General Virtualization Term | Docker Network Driver                            |
 |-----------------------------|--------------------------------------------------|
 | NAT Network                 | bridge                                           |
-| Bridged                     | macvlan, ipvlan (experimental since Docker 1.11) |
+| Bridged                     | macvlan, ipvlan (bản gốc ghi "experimental since Docker 1.11"; nay đã ổn định) |
 | Private / Host-only         | bridge                                           |
 | Overlay Network / VXLAN     | overlay                                          |
 
@@ -389,8 +396,16 @@ $ $ docker service create --replicas 2 --network my-multi-host-network --name my
 # 4. "Nói chuyện" giữa các container với nhau.
 
 - Trên cùng một host, các container chỉ cần dùng bridge network để nói chuyện được với nhau. Tuy nhiên, các container được cấp ip động nên nó có thể thay đổi, dẫn đến nhiều khó khăn. Vì vậy, thay vì dùng địa chỉ ip, ta có thể dùng name của các container để "liên lạc" giữa các container với nhau.
-- Trong trường hợp sử dụng default bridge network thì ta khai báo thêm lệnh `--link=name_container`.
+- Trong trường hợp sử dụng default bridge network thì ta khai báo thêm lệnh `--link=name_container`. (Cập nhật: `--link` đã legacy, default bridge `docker0` **không** có DNS theo tên container nên mới cần cách này. Nên dùng user-defined network như bên dưới.)
 - Trong trường hợp sử dụng user-defined bridge network thì ta không cần phải link nữa.
+- Cách làm chuẩn hiện nay, 3 lệnh là đủ:
+```sh
+docker network create mynet
+docker run -d --name db  --network mynet -e MYSQL_ROOT_PASSWORD=pass mysql:8.0
+docker run -d --name web --network mynet nginx:alpine
+# web gọi db qua tên: db:3306  (không cần biết IP, không cần -p cho db)
+```
+- Ưu điểm của user-defined bridge so với default bridge: phân giải tên container tự động; cô lập tốt hơn (container ở network khác không thấy nhau); gắn / gỡ container vào network khi đang chạy bằng `docker network connect|disconnect`. Docker Compose dùng đúng cơ chế này: mỗi project có một network riêng, các service gọi nhau theo tên service.
 
 ## 4.1 Trường hợp sử dụng default bridge network để kết nối các container
 
@@ -903,3 +918,12 @@ round-trip min/avg/max = 0.091/0.180/0.399 ms
 - https://hicu.be/docker-container-network-types
 - https://sreeninet.wordpress.com/2016/05/29/docker-macvlan-and-ipvlan-network-plugins/
 - https://sreeninet.wordpress.com/2016/05/29/macvlan-and-ipvlan/
+
+# 5. Lưu ý bảo mật: Docker và tường lửa (bổ sung 2026)
+- Khi bạn dùng `-p 8080:80`, Docker tự thêm quy tắc vào `iptables` (chuỗi `DOCKER`), **đi trước** các luật của `ufw` / `firewalld`. Hậu quả: cổng bạn publish **vẫn mở ra Internet** dù `ufw` đang chặn. Đây là bẫy rất hay gặp.
+- Cách giảm rủi ro:
+  - Chỉ bind vào localhost khi không cần public: `-p 127.0.0.1:5432:5432`. Với Compose: `ports: ["127.0.0.1:5432:5432"]`.
+  - Các dịch vụ nội bộ (database, cache) **không cần `ports:` gì cả**: các container cùng network đã gọi được nhau bằng tên.
+  - Muốn lọc lưu lượng tới container, đặt luật trong chuỗi `DOCKER-USER` của iptables (Docker không đụng tới chuỗi này).
+- Dùng `docker network create --internal mynet` để tạo network không có đường ra Internet (cho các container chỉ nói chuyện nội bộ).
+- Phần "container không ra được Internet" xem tip [iptables](../docker-tips/docker-containers-cant-access-the-internet-check-iptables.md).

@@ -1,3 +1,5 @@
+> **Cập nhật (2026):** các ví dụ dùng `ubuntu:14.04` (hãy đổi thành `ubuntu:24.04`) và `--link` (legacy, thay bằng user-defined network, xem bài [Network](docker-network.md) mục 4).
+
 ﻿# LAB1: Cài đặt docker
 
 tham khảo tại [link](https://github.com/congto/ghichep-docker/blob/master/docs/docker-thuchanh-caidat.md)

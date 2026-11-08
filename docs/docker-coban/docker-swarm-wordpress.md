@@ -1,3 +1,5 @@
+> **Cập nhật (2026):** file stack trong bài dùng `version: '3.1'`; khi chạy `docker stack deploy` có thể bỏ dòng này. Image `mysql:5.7` đã hết hỗ trợ, dùng `mysql:8.0`. Nhớ rằng `docker stack deploy` không build image và chỉ đọc các khóa dành cho Swarm trong `deploy:`, xem tip [Compose và Stack](../docker-tips/docker-compose-vs-stack.md).
+
 ## Thực hành với docker swarm 
 
 ## MỤC LỤC
@@ -8,7 +10,7 @@
 
 
 ### Yêu cầu
-- Cần có môi trường cài đặt theo tài liệu [Cài đặt docker swarm](./docker-thuchanh-caidat-dockerswarm.md)
+- Cần có môi trường cài đặt theo tài liệu [Cài đặt docker swarm](./docker-thuchanh-caidat-docker-swarm.md)
 - Đảm bảo theo mô hình và kiểm tra hoạt động của docker swarm cơ bản thành công trước khi tiến hành các bài thực hành bên dưới.
 
 #### 1. Sử dụng docker swarm để triển khai wordpress theo kiểu manual

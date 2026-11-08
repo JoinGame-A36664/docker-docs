@@ -1,3 +1,11 @@
+> **Cập nhật (2026): cách cài trong bài này đã lỗi thời, chỉ giữ lại để tham khảo lịch sử.**
+> - Bài gốc cài từ gói `kubernetes` trên **CentOS 7** (`yum -y install kubernetes etcd flannel`) với `etcd` và `flannel` cấu hình tay, chạy trên Docker. Cách này tương ứng Kubernetes 1.5 (2016-2017) và **không còn dùng được**: CentOS 7 đã hết hỗ trợ, gói `kubernetes` trong kho CentOS đã bị gỡ.
+> - Từ Kubernetes 1.24 (2022), `dockershim` bị loại bỏ, Kubernetes không còn dùng Docker Engine làm container runtime trực tiếp mà dùng **containerd** hoặc **CRI-O** (image build bằng Docker vẫn chạy trên Kubernetes bình thường, vì chuẩn image là OCI).
+> - Công cụ chuẩn để dựng cụm hiện nay là **kubeadm** (hoặc dịch vụ có sẵn của đám mây). Để học trên máy cá nhân thì dùng **kind**, **minikube** hoặc tính năng Kubernetes tích hợp trong Docker Desktop.
+> - Hướng dẫn cập nhật nằm ở bài mới: [Kubernetes hiện nay: kind, kubeadm và Deployment đầu tiên](../docker-nangcao/docker-kubernetes-hien-nay.md).
+>
+> Các khái niệm (node, pod, ánh xạ image → pod) trong bài vẫn đúng, hãy đọc để hiểu bản chất rồi làm theo bài mới.
+
 # Hướng dẫn cài đặt Kubernetes
 ## Môi trường LAB
 - 03 node cài CentOS7: 01 node admin và 02 node container

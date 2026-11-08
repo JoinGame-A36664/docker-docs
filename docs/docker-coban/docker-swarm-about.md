@@ -123,6 +123,14 @@ ____
         - Swarm mode có một thành phần là DNS nội bộ tự động gán mỗi service trong Swarm với một DNS name. Swarm manager sử dụng `internal load balancing` để phân phối các request giữa các service trong cluster dựa trên tên DNS của service.
 
 
+
+> **Bổ sung (2026): vị trí của Swarm hiện nay.**
+> - Swarm mode vẫn là một phần của Docker Engine, vẫn hoạt động và vẫn được hỗ trợ, nhưng chủ yếu ở mức duy trì, ít tính năng mới. Hệ sinh thái và việc làm xoay quanh **Kubernetes** nhiều hơn rất nhiều.
+> - Swarm phù hợp khi: cụm nhỏ (vài node), đội ngũ đã quen Docker/Compose và muốn thứ **đơn giản**, không cần hệ sinh thái Kubernetes.
+> - Kubernetes phù hợp khi: cần tự động mở rộng, nhiều môi trường, hệ sinh thái công cụ lớn (Helm, Ingress, Operator...), hoặc dùng dịch vụ có sẵn của đám mây (EKS, GKE, AKS).
+> - Những tính năng Swarm nên biết thêm: `docker secret` (lưu mật khẩu mã hóa cho service), `docker config` (cấu hình không nhạy cảm), `docker swarm update --autolock=true` (khóa cụm, bảo vệ khóa mã hóa Raft), `docker service update --rollback` (quay về bản trước), `docker node update --availability drain` (rút node để bảo trì).
+> - Học Swarm vẫn rất có ích: các khái niệm service, replica, overlay network, rolling update, health check đều dùng lại nguyên si khi chuyển sang Kubernetes.
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

@@ -14,9 +14,56 @@
   
   
 ## Cài đặt docker engine
-### Cài bản stable mới nhất
-- Các OS áp dụng: CentOS 7.3 64bit, Ubuntu 14.04 64bit, Ubuntu 16.04 64bit
-- Đăng nhập với quyên `root` và thực hiện lệnh dưới để cài đặt. Đảm bảo máy có kết nối internet.
+
+> **Cập nhật (2026):** CentOS 7, Ubuntu 14.04 và 16.04 trong bản gốc đều đã hết vòng đời hỗ trợ. Hiện nay có 3 cách cài, chọn theo môi trường của bạn:
+>
+> | Môi trường | Cách cài |
+> |---|---|
+> | Ubuntu 22.04/24.04, Debian 11/12 | Cách 1 (kho apt chính thức), hoặc chạy [`scripts/install-docker.sh`](../../scripts/install-docker.sh) |
+> | Rocky/AlmaLinux 8-9, RHEL, Fedora (thay thế CentOS 7) | Dùng `dnf` với kho `https://download.docker.com/linux/rhel/docker-ce.repo` (xem mục Cách 3) |
+> | Windows 10/11, macOS | Cách 2: Docker Desktop |
+> | Lab nhanh, máy thử nghiệm | Cách 3: script `get.docker.com` (cách gốc của tài liệu này) |
+
+### Cách 1. Cài từ kho apt chính thức (Ubuntu/Debian, khuyến nghị)
+Các bước chi tiết nằm ở bài [Cài đặt docker](../docker-5m/01.Caidatdocker.md). Tóm tắt:
+
+```sh
+sudo apt-get update && sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+### Cách 2. Cài Docker trên Windows / macOS (Docker Desktop)
+- **Windows 10/11**: cài [Docker Desktop](https://www.docker.com/products/docker-desktop/) và chọn backend **WSL 2** (Windows 11 Home chạy được, không cần bản Pro). Nếu máy chưa có WSL, mở PowerShell với quyền Administrator:
+  ```powershell
+  wsl --install
+  ```
+  Khởi động lại máy, cài Docker Desktop, mở ứng dụng và đợi biểu tượng cá voi báo "Engine running".
+- **macOS**: cài Docker Desktop (chip Intel hoặc Apple Silicon đều có bản riêng).
+- Mở terminal (PowerShell, Terminal, hoặc Ubuntu trong WSL) và kiểm tra:
+  ```sh
+  docker --version
+  docker compose version
+  docker run --rm hello-world
+  ```
+- Lưu ý: image `linux/amd64` và `linux/arm64` khác nhau. Máy Apple Silicon hoặc ARM sẽ tự kéo bản `arm64` nếu image hỗ trợ. Nếu cần ép bản khác: `docker run --platform linux/amd64 ...`.
+- Docker Desktop có điều khoản giấy phép riêng cho doanh nghiệp lớn. Nếu chỉ học và thực hành thì dùng thoải mái.
+
+### Cách 3. Script tiện lợi `get.docker.com` (cách gốc của tài liệu)
+- Phù hợp để lab nhanh trên máy thử nghiệm. Docker khuyến cáo không dùng cách này cho production vì nó không cho bạn kiểm soát phiên bản và kho gói.
+- Trên họ RHEL (Rocky/Alma/Fedora) thay CentOS 7 cũ, có thể cài thủ công:
+  ```sh
+  sudo dnf -y install dnf-plugins-core
+  sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+  sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  sudo systemctl enable --now docker
+  ```
+- Đọc nội dung script trước khi chạy `curl ... | sh` là thói quen tốt: tải về `curl -fsSL https://get.docker.com -o get-docker.sh`, mở xem, rồi mới chạy `sudo sh get-docker.sh`.
+- Đăng nhập với quyền `root` và thực hiện lệnh dưới để cài đặt. Đảm bảo máy có kết nối internet.
 	```sh
 	su - 
 	
@@ -77,7 +124,7 @@
 		Hint: Some lines were ellipsized, use -l to show in full.
 		```
 
-- Kiểm tra phiên bản của docker sau khi cài đặt, trong hướng dẫn này là bản 17.07.0-ce
+- Kiểm tra phiên bản của docker sau khi cài đặt. (Kết quả mẫu bên dưới được ghi từ bản 17.07.0-ce của tài liệu gốc; bản hiện tại sẽ có số phiên bản mới hơn, API version mới hơn, và hiển thị thêm các dòng `Context`, `Plugins`, `containerd`, `runc`. Cách đọc kết quả thì không đổi.)
 	```sh
 	docker version
 	```
@@ -194,7 +241,7 @@ Chạy một container tức là khởi chạy một ứng dụng nào đó tron
   docker run -it busybox
   ```
 
-Trong lệnh trên ta sử dụng tùy chọn `-it` - đây chính là tùy chọn cho phép tương tác trực tiếp trong container, kết quả ta sẽ nhận được cửa sổ thao tác trong container như sau.
+Trong lệnh trên ta sử dụng tùy chọn `-it` - đây chính là tùy chọn cho phép tương tác trực tiếp trong container, kết quả ta sẽ nhận được cửa sổ thao tác trong container như sau. (Mẹo: thêm `--rm` để container tự xóa khi thoát, tránh để lại nhiều container đã dừng: `docker run -it --rm busybox`.)
 
   ```sh
   root@devstack01:~# docker run -it busybox
@@ -275,7 +322,8 @@ Ngoài cách mở trình duyệt vào địa chỉ, ta có thể sử dụng l�
   <html><body><h1>It works!</h1></body></html>
   ```
 
-- Trong trường hợp một container có nhiều port, ta cần sử dụng nhiều port thì có thể sử dùng tùy chọn `-p 4000:80 8081:3306`.
+- Trong trường hợp một container có nhiều port, ta cần sử dụng nhiều port thì có thể sử dùng tùy chọn `-p` nhiều lần: `-p 4000:80 -p 8081:3306`. (Bản gốc viết thiếu `-p` thứ hai nên sẽ báo lỗi.)
+- Mặc định `-p 4000:80` mở port trên mọi card mạng của host (`0.0.0.0`). Nếu chỉ muốn truy cập từ chính máy đó, ghi rõ địa chỉ: `-p 127.0.0.1:4000:80`.
 
 - Trong trường hợp ta muốn ánh xạ port ngẫu nhiên cho toàn bộ các port có sẵn trong container, ta sử dụng tùy chọn `-P`, ví dụ
 
@@ -344,14 +392,22 @@ Trong ví dụ trên:
   ```sh
   docker rm 459c2c5f8d32
   ```
-hoặc 
+hoặc (xóa cả container đang chạy)
 
   ```sh
-  docker rm 459c2c5f8d32
+  docker rm -f 459c2c5f8d32
   ```
   
 - Có thể sử dụng thủ thuật dưới để xóa toàn bộ các container 
 
   ```sh
-  docker rm -f `docker ps -aq`
+  docker rm -f $(docker ps -aq)
   ```
+
+- Cách gọn hơn, chỉ xóa các container **đã dừng**:
+
+  ```sh
+  docker container prune
+  ```
+
+> **Cập nhật (2026):** từ Docker 1.13 các lệnh được nhóm theo đối tượng: `docker container ls`, `docker container rm`, `docker image ls`, `docker image rm`... Lệnh ngắn kiểu cũ (`docker ps`, `docker rm`, `docker images`) vẫn dùng được và tài liệu này vẫn dùng chúng cho ngắn gọn.

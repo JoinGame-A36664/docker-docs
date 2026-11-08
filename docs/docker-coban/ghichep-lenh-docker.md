@@ -1,5 +1,11 @@
 # 2. Các câu lệnh được dùng phổ biến khi sử dụng Docker
 
+> **Cập nhật (2026):** những điểm khác biệt chính với thời điểm viết bài gốc:
+> - Cú pháp theo nhóm đối tượng là chuẩn mới: `docker container run`, `docker container ls`, `docker image ls`, `docker image rm`... Các lệnh ngắn cũ (`docker run`, `docker ps`, `docker images`, `docker rmi`) vẫn chạy bình thường nên bài này giữ nguyên.
+> - `--link` là cơ chế **legacy**. Hãy tạo một **user-defined network** rồi cho các container tham gia network đó, chúng tự gọi nhau bằng tên (xem bài [Network trong Docker](docker-network.md)).
+> - `docker-compose` (v1) đã thay bằng `docker compose` (v2), xem bài [Docker Compose](docker-compose.md).
+> - Cuối bài có mục "Nhóm lệnh bổ sung" gồm `docker system`, `docker buildx`, `docker context`, `docker scout`...
+
 ____
 
 # Mục lục
@@ -518,6 +524,78 @@ ____
             | Option | Mặc định | Mô tả |
             | ------------- | ------------- | ------------- |
             | --quiet , -q   |  | Only show numeric IDs |
+____
+
+# Nhóm lệnh bổ sung (cập nhật 2026)
+
+- ### Dọn dẹp và kiểm tra dung lượng
+
+    | Lệnh | Tác dụng |
+    | ------------- | ------------- |
+    | `docker system df` | Xem Docker đang chiếm bao nhiêu dung lượng (images, containers, volumes, build cache) |
+    | `docker container prune` | Xóa tất cả container đã dừng |
+    | `docker image prune` | Xóa image "dangling" (không có tag). Thêm `-a` để xóa mọi image không được container nào dùng |
+    | `docker volume prune` | Xóa volume không được dùng (**cẩn thận**, mất dữ liệu) |
+    | `docker network prune` | Xóa network không được dùng |
+    | `docker builder prune` | Xóa build cache của BuildKit |
+    | `docker system prune` | Gộp: container dừng, network, image dangling, build cache. Thêm `--volumes` để xóa cả volume |
+
+    Ví dụ: ổ đĩa đầy do Docker, xem nhanh cái gì chiếm chỗ rồi dọn:
+
+        docker system df
+        docker system prune -f
+
+- ### Xem thông tin và theo dõi
+
+    | Lệnh | Tác dụng |
+    | ------------- | ------------- |
+    | `docker stats` | Theo dõi CPU, RAM, mạng, I/O theo thời gian thực của các container |
+    | `docker top <container>` | Liệt kê các tiến trình đang chạy trong container |
+    | `docker events` | Xem luồng sự kiện của Docker daemon |
+    | `docker history <image>` | Xem các layer của image và dung lượng từng layer |
+    | `docker inspect --format '{{.State.Health.Status}}' <container>` | Lấy một trường cụ thể (ví dụ trạng thái healthcheck) |
+    | `docker logs --tail 100 -f <container>` | Xem 100 dòng log cuối rồi theo dõi tiếp |
+    | `docker cp <container>:/duong/dan ./` | Sao chép file giữa container và máy host |
+
+- ### Giới hạn tài nguyên và tự khởi động lại khi `docker run`
+
+        docker run -d --name web --restart unless-stopped --memory 256m --cpus 0.5 nginx:alpine
+
+    `--restart` nhận: `no` (mặc định), `on-failure[:max]`, `always`, `unless-stopped`.
+
+- ### Build và đa nền tảng với `docker buildx`
+
+        docker buildx ls                                   # danh sách builder
+        docker buildx build -t myapp:1.0 .                 # build (BuildKit)
+        docker buildx build --platform linux/amd64,linux/arm64 -t user/myapp:1.0 --push .
+        docker buildx imagetools inspect user/myapp:1.0    # xem image hỗ trợ các nền tảng nào
+
+- ### Quản lý nhiều môi trường Docker với `docker context`
+
+        docker context ls                                  # xem các context (local, remote)
+        docker context create prod --docker "host=ssh://user@server"
+        docker context use prod                            # từ giờ mọi lệnh docker chạy trên server qua SSH
+        docker --context prod ps                           # hoặc dùng cho đúng một lệnh
+
+- ### Bảo mật: quét lỗ hổng và SBOM
+
+        docker scout quickview myapp:1.0                   # tổng quan lỗ hổng của image
+        docker scout cves myapp:1.0                        # liệt kê chi tiết CVE
+        docker scout sbom myapp:1.0                        # danh sách thành phần phần mềm (SBOM)
+
+    (Các lệnh `docker scout` có sẵn trong Docker Desktop và Docker CLI mới; cần đăng nhập Docker Hub để dùng đầy đủ. Trivy là lựa chọn mã nguồn mở hoàn toàn độc lập.)
+
+- ### Tạo nhanh Dockerfile và compose cho dự án
+
+        docker init
+
+- ### Compose (thay thế `docker-compose`)
+
+        docker compose up -d
+        docker compose ps
+        docker compose logs -f
+        docker compose down
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

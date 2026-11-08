@@ -1,5 +1,14 @@
 # Cách viết Docker Compose file.
 
+> **Cập nhật (2026):** bài này viết theo "Compose file version 3" (2017). Hiện nay Compose dùng **Compose Specification**, một đặc tả duy nhất cho `docker compose` (v2). Những điều cần biết khi đọc bài:
+> - Dòng `version: '3'` / `'2.1'` / `"3.3"` trong các ví dụ **không còn cần thiết**, bạn có thể bỏ đi. Nếu để lại, `docker compose` vẫn chạy nhưng in cảnh báo `the attribute 'version' is obsolete`.
+> - Tên file ưu tiên là `compose.yaml` (vẫn đọc được `docker-compose.yml`).
+> - Mục `deploy:` giờ **không còn chỉ dành cho Swarm**: `docker compose up` cũng áp dụng `deploy.resources` (giới hạn CPU/RAM) và `deploy.replicas`. Các phần `update_config`, `placement`, `restart_policy`... vẫn chỉ có ý nghĩa với Swarm (`docker stack deploy`).
+> - `links` và `external_links` là cơ chế **cũ (legacy)**. Các service trong cùng một file đã nằm chung một network mặc định và gọi nhau bằng **tên service** (ví dụ `db:3306`), không cần `links`.
+> - `depends_on` giờ có dạng dài với `condition: service_started | service_healthy | service_completed_successfully`, kết hợp với `healthcheck`.
+> - Mục mới đáng biết: `healthcheck`, `profiles` (bật/tắt service theo ngữ cảnh), `secrets`, `configs`, `develop.watch` (dùng với `docker compose watch`), `include` (nhúng file compose khác), `extends`, `pull_policy`, `init`.
+> - Phần cuối bài có mục "Các mục mới" tóm tắt cách dùng.
+
 ____
 
 # Mục lục
@@ -290,6 +299,17 @@ Một Compose file có thể có phần mở rộng của file là `.yml` hoặc
 
     - Sử dụng để khai báo cấu hình liên quan đến việc deploy và run service. Nó chỉ ảnh hưởng khi bạn triển khai trong swarm với [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) và bị phớt lờ bởi `docker-compose up` và `docker-compose run`.
 
+        > **Cập nhật (2026):** điều này đã thay đổi. `docker compose up` (v2) cũng áp dụng `deploy.resources.limits` (giới hạn CPU/RAM) và `deploy.replicas`. Ví dụ giới hạn tài nguyên chạy được cả trên một máy đơn:
+        >
+        >     services:
+        >       web:
+        >         image: nginx:alpine
+        >         deploy:
+        >           resources:
+        >             limits:
+        >               cpus: "0.5"
+        >               memory: 256M
+
     - Ví dụ:
 
             version: '3'
@@ -316,6 +336,25 @@ Một Compose file có thể có phần mở rộng của file là `.yml` hoặc
 - ### <a name="14">depends_on</a>
 
     - Thể hiện sụ phụ thuộc giữa services. Ví dụ:
+
+        > **Cập nhật (2026):** ngoài dạng ngắn (danh sách tên service), có dạng dài để đợi service kia thật sự **sẵn sàng** chứ không chỉ "đã khởi chạy":
+        >
+        >     services:
+        >       web:
+        >         build: .
+        >         depends_on:
+        >           db:
+        >             condition: service_healthy     # đợi healthcheck của db báo healthy
+        >           migrate:
+        >             condition: service_completed_successfully   # đợi job một lần chạy xong
+        >       db:
+        >         image: postgres:16
+        >         healthcheck:
+        >           test: ["CMD-SHELL", "pg_isready -U postgres"]
+        >           interval: 5s
+        >           retries: 10
+        >
+        > Trong bản gốc, `depends_on` dạng ngắn chỉ quyết định **thứ tự khởi chạy**, nên ứng dụng vẫn có thể lỗi kết nối nếu DB chưa kịp mở port.
 
             version: '3'
                 services:
@@ -437,6 +476,7 @@ Một Compose file có thể có phần mở rộng của file là `.yml` hoặc
             image: a4bc65fd
 
 - ### <a name="24">links</a>
+    - > **Cập nhật (2026):** `links` là tính năng **legacy**, hầu như không còn cần. Mọi service trong cùng một file compose tự động chung network mặc định và truy cập nhau bằng tên service (DNS nội bộ của Docker). Chỉ dùng `links` khi muốn đặt thêm **bí danh (alias)** cho một service.
     - Link container tới một hay nhiều dịch vụ. Ví dụ:
 
             web:
@@ -627,5 +667,67 @@ Một Compose file có thể có phần mở rộng của file là `.yml` hoặc
             restart: unless-stopped
 
 ____
+
+# Các mục mới (bổ sung 2026)
+
+- ### healthcheck
+    - Khai báo cách kiểm tra service còn "khỏe" hay không. Có thể đặt trong Dockerfile (`HEALTHCHECK`) hoặc ghi đè trong compose:
+
+            services:
+              web:
+                image: nginx:alpine
+                healthcheck:
+                  test: ["CMD", "wget", "-qO-", "http://localhost/"]
+                  interval: 10s      # bao lâu kiểm tra một lần
+                  timeout: 3s        # quá thời gian này tính là thất bại
+                  retries: 3         # thất bại liên tiếp chừng này lần -> unhealthy
+                  start_period: 10s  # thời gian "khởi động", thất bại trong lúc này chưa tính
+
+    - Xem trạng thái trong cột `STATUS` của `docker compose ps` / `docker ps` (ví dụ `Up 1 minute (healthy)`).
+
+- ### profiles
+    - Gắn service vào một "profile", service đó chỉ chạy khi bạn yêu cầu. Hữu ích cho công cụ debug hay job thỉnh thoảng mới dùng:
+
+            services:
+              app:
+                image: myapp
+              adminer:
+                image: adminer
+                profiles: ["debug"]
+
+            docker compose up -d                     # chỉ chạy app
+            docker compose --profile debug up -d     # chạy cả adminer
+
+- ### secrets
+    - Truyền thông tin nhạy cảm (mật khẩu, khóa) vào container dưới dạng file thay vì biến môi trường. File nằm ở `/run/secrets/<ten>` trong container:
+
+            services:
+              db:
+                image: postgres:16
+                environment:
+                  POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+                secrets:
+                  - db_password
+            secrets:
+              db_password:
+                file: ./db_password.txt
+
+- ### include và extends
+    - `include` nhúng một file compose khác vào (chia dự án lớn thành nhiều file), `extends` kế thừa cấu hình một service từ file khác:
+
+            include:
+              - ./database/compose.yaml
+            services:
+              web:
+                extends:
+                  file: common.yaml
+                  service: base-web
+
+- ### develop.watch
+    - Dùng với `docker compose watch`, tự đồng bộ file hoặc build lại khi bạn sửa code (xem phần Compose Watch ở bài [Docker Compose](docker-compose.md)).
+
+- ### Gộp nhiều file: `compose.override.yaml`
+    - Nếu thư mục có cả `compose.yaml` và `compose.override.yaml`, Compose tự gộp hai file (file override ghi đè). Thường dùng: file chính cho cấu hình chung, file override cho máy dev (mở port debug, mount code).
+    - Có thể chỉ định thủ công: `docker compose -f compose.yaml -f compose.prod.yaml up -d`.
 
 # <a name="content-others">Các nội dung khác</a>

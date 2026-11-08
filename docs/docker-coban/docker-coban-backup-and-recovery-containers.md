@@ -1,3 +1,5 @@
+> **Cập nhật (2026):** `docker commit` / `docker export` vẫn dùng được nhưng chỉ lưu **hệ thống file của container**, không lưu dữ liệu nằm trong volume. Cách sao lưu hiện nay là: (1) mọi thứ dựng được bằng Dockerfile + `compose.yaml` thì giữ chúng trong git (infrastructure as code); (2) dữ liệu trong volume sao lưu bằng một container tạm chạy `tar` (xem mục bổ sung cuối bài [Volume](docker-volume.md)); (3) với database nên dùng công cụ riêng (`mysqldump`, `pg_dump`) rồi lưu kết quả ra ngoài.
+
 # Backup và Recovery Docker Containers
 
 ____

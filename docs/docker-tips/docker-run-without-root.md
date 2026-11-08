@@ -18,6 +18,19 @@ ____
 
     *hãy thực hiện đăng xuất ra khỏi Docker host và sau đó kiểm tra xem có hiệu lực hay chưa*.
 
+
+> **Bổ sung (2026):**
+> - Lưu ý bảo mật: thành viên của group `docker` **có quyền tương đương `root`** trên máy chủ (vì có thể chạy container mount `/` của host). Chỉ thêm người bạn tin tưởng, và không dùng cách này cho máy chủ nhiều người dùng.
+> - Hiện nay có lựa chọn an toàn hơn là **Rootless mode**: chính Docker daemon chạy bằng user thường, không cần `root` ở bất kỳ bước nào sau khi cài. Cài (trên Ubuntu cần gói `uidmap`):
+>
+>       sudo apt-get install -y uidmap dbus-user-session
+>       dockerd-rootless-setuptool.sh install
+>       systemctl --user enable --now docker
+>       export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+>
+>   Hạn chế: không publish được port dưới 1024 (trừ khi cấu hình thêm), một số network driver bị giới hạn. Đổi lại, nếu container bị khai thác thì kẻ tấn công không có `root` trên host.
+> - Cách khác đáng biết: **Podman** cũng chạy container không cần daemon và không cần root, dùng gần như cùng lệnh (`podman run`, `podman build`).
+
 ____
 
 # <a name="content-others">Các nội dung khác</a>

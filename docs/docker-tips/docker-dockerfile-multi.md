@@ -20,8 +20,6 @@ Các dự án nhỏ hơn có thể dễ dàng tổ chức được không? Bạn
 
     nội dung của `docker-compose.yml` có thể bao gồm như sau:
 
-        version: '3'
-
         services:
           myapp:
             build: '.'
@@ -46,8 +44,6 @@ Các dự án nhỏ hơn có thể dễ dàng tổ chức được không? Bạn
 
     - Tệp docker-compose.yml có thể giống như sau:
 
-            version: '3'
-
             services:
               auth:
                 build: './auth'
@@ -60,6 +56,9 @@ Các dự án nhỏ hơn có thể dễ dàng tổ chức được không? Bạn
 
         Đây chính là cách để build Dockerfile cho mỗi dịch vụ.
 
+
+
+> **Bổ sung (2026):** bỏ dòng `version: '3'` trong các file compose ở trên, Compose hiện nay không cần nữa. Lưu ý đừng nhầm bài này (tổ chức **nhiều Dockerfile** cho nhiều dịch vụ) với **multi-stage build** (nhiều `FROM` trong **một** Dockerfile để image cuối nhỏ gọn). Multi-stage được trình bày ở mục 3.19 của bài [Dockerfile](../docker-coban/docker-dockerfile.md).
 
 ____
 

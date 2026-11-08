@@ -8,7 +8,7 @@
 
 [Docker image](ghichep-docker-images.md)
 
-[Viết dockerfile để build image](dockerfile.md)
+[Viết dockerfile để build image](docker-dockerfile.md)
 
 [Volume trong docker](docker-volume.md)
 
@@ -36,9 +36,9 @@
 
 [Thực hành với docker network](docker-thuchanh-network.md)
 
-[Thực hành cài đặt Docker Swarm](docker-thuchanh-caidat-dockerswarm.md)
+[Thực hành cài đặt Docker Swarm](docker-thuchanh-caidat-docker-swarm.md)
 
-[Thực hành cài đặt Kubernetes](docker-thuchanh-caidat-kubernetes.md)
+[Thực hành cài đặt Kubernetes](docker-thuchanh-caidat-kubernetes.md) (cách cài cũ, chỉ để tham khảo; cách làm hiện nay xem [Kubernetes hiện nay](../docker-nangcao/docker-kubernetes-hien-nay.md))
 
 
 ### Demo Docker

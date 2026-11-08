@@ -14,7 +14,7 @@ ____
 
 - Để loại trừ các tập tin hay thư mục. Việc bạn phải làm là tạo tệp `.dockerignore` cùng với tệp `Dockerfile` của bạn.
 
-- Ta có thể sử dụng các khai báo trong file `.dockerfileignore` để phớt lờ đi sự có mặt của các file đang có trong đường dẫn thực hiện build Docker. `.dockerfileignore` sử dụng `filepath.Math rules`. Ví dụ:
+- Ta có thể sử dụng các khai báo trong file `.dockerignore` (bản gốc ghi nhầm là `.dockerfileignore`, tên đúng là `.dockerignore`) để phớt lờ đi sự có mặt của các file đang có trong đường dẫn thực hiện build Docker. `.dockerignore` sử dụng `filepath.Match rules`. Ví dụ:
 
   */temp* có nghĩa là loại trừ các file và đường dẫn bắt đầu bằng temp hoặc sub-directory của root. Ví dụ sau đều có thể hiểu là một:
 
@@ -50,6 +50,25 @@ ____
         !README.md
     
   có thể hiểu là tất cả các file .md `đều không được sử dụng ngoại trừ file README.md`
+
+
+> **Bổ sung (2026):** mẫu `.dockerignore` hay dùng cho một dự án web:
+>
+>       .git
+>       .gitignore
+>       node_modules
+>       __pycache__
+>       *.pyc
+>       .env
+>       .env.*
+>       !.env.example
+>       Dockerfile
+>       docker-compose*.yml
+>       compose*.yaml
+>       *.md
+>       !README.md
+>
+> Ngoài làm image nhỏ hơn, `.dockerignore` còn **giảm rủi ro rò rỉ bí mật** (`.env`, khóa SSH, `.git` chứa lịch sử) vào image, và làm build nhanh hơn vì gửi ít dữ liệu cho BuildKit.
 
 ____
 

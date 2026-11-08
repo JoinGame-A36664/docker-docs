@@ -1,3 +1,5 @@
+> **Cập nhật (2026):** ví dụ dùng `ubuntu:14.04` và `MAINTAINER` (cả hai đã cũ), khi thực hành hãy đổi sang `ubuntu:24.04` và `LABEL maintainer=...`. Về mặt thiết kế: Docker khuyến nghị **mỗi container một tiến trình chính**; chạy nhiều tiến trình trong một container bằng `supervisor` (ssh + apache + nginx như bài) chỉ nên dùng khi thật sự cần, ví dụ ứng dụng cũ khó tách. Với ứng dụng mới, hãy tách thành nhiều container và nối bằng Compose. Cần thao tác vào container thì dùng `docker exec -it` thay vì chạy SSH trong container. Nếu cần một "init" nhẹ để dọn tiến trình con, dùng `docker run --init` hoặc `init: true` trong Compose.
+
 ## Hướng dẫn sử dụng supervisor để quản lý multi service trên container.
 
 Thông thường, người dùng được khuyến cáo chạy riêng rẽ mỗi service trên từng container. Tuy nhiên, trong rất nhiều trường hợp, container có thể chạy đồng thời nhiều service trên một container. Điều này có thể gây ra khó khăn trong quá trình khởi tạo image với Dockerfile hay trong quá trình sử dụng service. 
