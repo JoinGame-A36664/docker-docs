@@ -1,0 +1,10 @@
+# Cấu hình và bí mật: TUYỆT ĐỐI không đưa lên git
+.env
+bi-mat/db_password.txt
+
+# File sao lưu dữ liệu thật (chứa dữ liệu của người dùng)
+sao-luu/*.gz
+sao-luu/*.sql
+
+__pycache__/
+*.pyc

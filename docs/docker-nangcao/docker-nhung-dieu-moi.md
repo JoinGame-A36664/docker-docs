@@ -105,7 +105,7 @@ Muốn an toàn hơn nữa ở mức daemon: **Rootless mode** (xem tip [chạy 
 - Docker Swarm vẫn còn nhưng ít được phát triển thêm; xem nhận định ở cuối bài [Giới thiệu Docker Swarm](../docker-coban/docker-swarm-about.md).
 
 # <a name="next">8. Nên học gì tiếp theo</a>
-1. Làm trọn dự án [`practice/`](../../practice/README.md) rồi làm 7 bài tập mở rộng.
+1. Làm trọn hai dự án trong [`thuc-hanh/`](../../thuc-hanh/README.md): Dự án 1 (6 giai đoạn) rồi Dự án 2 (kế hoạch đóng gói một web hoàn chỉnh).
 2. CI/CD: tự động build, quét lỗ hổng và đẩy image mỗi khi push code (GitHub Actions có sẵn các action `docker/build-push-action`, `docker/setup-buildx-action`).
 3. Registry riêng (Harbor) hoặc `ghcr.io`.
 4. Kubernetes cơ bản: Pod, Deployment, Service, Ingress, ConfigMap, Secret, PersistentVolume, Helm.

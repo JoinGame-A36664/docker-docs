@@ -1,0 +1,99 @@
+# =====================================================================
+# GIAI ĐOẠN 5: Thêm "lễ tân" nginx đứng trước, chia mạng thành hai khu
+# =====================================================================
+# File này gần giống giai đoạn 4. Chỗ nào MỚI hoặc ĐÃ ĐỔI có ghi "MỚI" hoặc "ĐỔI".
+# Cách đọc YAML: # là ghi chú; "tên: giá trị"; thụt lề 2 dấu cách = nằm bên trong; dấu "-" = một mục trong danh sách.
+# Chạy:  docker compose up -d --build        Dừng:  docker compose down
+#
+# Sơ đồ:
+#   người dùng ──► [nginx] ──► [web] ──► [redis]
+#                 mạng "khu-ngoai"   mạng "khu-trong"
+#   - nginx chỉ nằm ở khu ngoài.
+#   - redis chỉ nằm ở khu trong.
+#   - web nằm ở CẢ HAI khu, đóng vai người đứng giữa nối hai bên.
+# =====================================================================
+
+name: so-luu-but
+
+services:
+
+  # ---------------------------------------------------------------
+  # MỚI: dịch vụ "nginx" - lễ tân, nơi DUY NHẤT người ngoài được gặp
+  # ---------------------------------------------------------------
+  nginx:
+    # Dùng image nginx có sẵn, không cần tự đóng gói.
+    image: nginx:1.27-alpine
+
+    ports:
+      # Cánh cửa duy nhất thông ra ngoài. Bên trái là cổng trên máy bạn, bên phải là cổng 80 trong nginx.
+      - "${HTTP_PORT:-8080}:80"
+
+    volumes:
+      # Gắn file cấu hình của nginx vào đúng chỗ nginx đọc.
+      # "./nginx/default.conf" là file nằm trong thư mục "nginx" cạnh file này.
+      # Đuôi ":ro" = chỉ đọc (nginx không được sửa file của bạn).
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+    depends_on:
+      web:
+        # Đợi web báo "khỏe" rồi nginx mới bật, để lễ tân không dẫn khách vào phòng trống.
+        condition: service_healthy
+
+    # Chỉ cắm nginx vào "khu ngoài".
+    networks:
+      - khu-ngoai
+
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------
+  # ĐỔI: "web" không còn mở cổng ra ngoài nữa (đã bỏ mục "ports")
+  # ---------------------------------------------------------------
+  web:
+    build: ../ung-dung
+    image: so-luu-but-web:1.0
+
+    # ĐỔI: ở giai đoạn 4 chỗ này có "ports". Giờ BỎ ĐI. Người ngoài không còn vào thẳng web được,
+    # chỉ đi qua nginx. Nginx vẫn gọi được web vì cùng nằm trong mạng "khu-ngoai".
+
+    environment:
+      REDIS_HOST: redis
+      APP_TITLE: ${APP_TITLE:-Sổ lưu bút Docker}
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    # MỚI: web đứng giữa nên cắm vào CẢ HAI khu: để nginx gọi được web, và web gọi được redis.
+    networks:
+      - khu-ngoai
+      - khu-trong
+
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------
+  # "redis" vẫn như giai đoạn 4, chỉ thêm: cắm vào khu trong, và KHÔNG có "ports"
+  # ---------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - du-lieu-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+    # MỚI: chỉ cắm vào "khu trong". nginx không ở khu này nên không thể gọi trực tiếp redis.
+    networks:
+      - khu-trong
+
+    restart: unless-stopped
+
+# MỚI: khai báo hai mạng. Để trống sau dấu hai chấm = dùng cấu hình mặc định.
+networks:
+  khu-ngoai:   # nginx <-> web
+  khu-trong:   # web <-> redis
+
+volumes:
+  du-lieu-redis:

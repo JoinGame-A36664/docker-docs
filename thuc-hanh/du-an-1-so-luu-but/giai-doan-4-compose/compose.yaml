@@ -1,0 +1,91 @@
+# =====================================================================
+# GIAI ĐOẠN 4: Gom tất cả các lệnh tay của giai đoạn 3 vào MỘT FILE
+# =====================================================================
+# Cách đọc file này (quy tắc YAML, chỉ có 4 điều):
+#   1. Dòng bắt đầu bằng  #  là GHI CHÚ, máy bỏ qua.
+#   2. "tên: giá trị"  nghĩa là đặt một thông số. Có dấu hai chấm và một dấu cách.
+#   3. THỤT LỀ (dùng 2 dấu cách, KHÔNG dùng phím Tab) nghĩa là "nằm bên trong" dòng ở trên.
+#   4. Dòng bắt đầu bằng  -  là MỘT MỤC trong một danh sách.
+# Chạy:  docker compose up -d --build        Dừng:  docker compose down
+# =====================================================================
+
+# Đặt tên cho cả hệ thống. Docker dùng tên này làm tiền tố khi đặt tên
+# container, mạng, ổ lưu trữ, ví dụ: so-luu-but-web-1.
+name: so-luu-but
+
+# "services" = danh sách các dịch vụ (mỗi dịch vụ sẽ thành một hoặc nhiều container).
+# Tương ứng với việc bạn gõ nhiều lệnh "docker run" ở giai đoạn 3.
+services:
+
+  # ---------------------------------------------------------------
+  # Dịch vụ thứ nhất: "web" (ứng dụng sổ lưu bút)
+  # Thay cho lệnh:  docker run --name web --network ... -e REDIS_HOST=redis -p 8000:8000 so-luu-but-web:1.0
+  # ---------------------------------------------------------------
+  web:
+    # "build" = tự đóng gói image từ Dockerfile nằm ở thư mục này.
+    # "../ung-dung" nghĩa là: lùi ra một cấp rồi vào thư mục ung-dung. Thay cho "docker build" ở giai đoạn 2.
+    build: ../ung-dung
+
+    # Tên (và phiên bản) cho image vừa đóng gói, giống "-t so-luu-but-web:1.0".
+    image: so-luu-but-web:1.0
+
+    # "ports" = danh sách các cánh cửa thông ra ngoài (giống -p).
+    ports:
+      # Bên trái là cổng trên MÁY BẠN, bên phải là cổng TRONG container.
+      # ${HTTP_PORT:-8080} nghĩa là: lấy giá trị HTTP_PORT trong file .env;
+      # nếu không có thì dùng 8080. Dấu ngoặc kép bắt buộc phải có.
+      - "${HTTP_PORT:-8080}:8000"
+
+    # "environment" = các tờ giấy dặn việc truyền cho chương trình (giống -e).
+    environment:
+      # Dặn ứng dụng: cuốn sổ nằm ở máy tên "redis".
+      # "redis" ở đây chính là tên của dịch vụ redis ở bên dưới.
+      # Compose tự tạo mạng riêng và tự cho các dịch vụ gọi nhau bằng tên, bạn không phải làm gì thêm.
+      REDIS_HOST: redis
+      # Tiêu đề trang. Lấy từ .env, không có thì dùng chữ sau dấu :-
+      APP_TITLE: ${APP_TITLE:-Sổ lưu bút Docker}
+
+    # "depends_on" = phụ thuộc: web chỉ được khởi động SAU khi điều kiện bên dưới đúng.
+    depends_on:
+      redis:
+        # "service_healthy" = đợi tới khi redis báo "tôi khỏe" (xem phần healthcheck của redis).
+        # Nếu chỉ ghi "- redis" thì web chạy ngay khi redis vừa bật, có thể lúc đó redis chưa sẵn sàng.
+        condition: service_healthy
+
+    # "restart" = nếu container bị tắt bất ngờ thì tự bật lại,
+    # trừ khi chính bạn chủ động tắt nó.
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------
+  # Dịch vụ thứ hai: "redis" (cuốn sổ ghi chép)
+  # Thay cho lệnh:  docker run --name redis -v du-lieu-redis:/data redis:7-alpine redis-server --appendonly yes
+  # ---------------------------------------------------------------
+  redis:
+    # Dùng image có sẵn, không cần build.
+    image: redis:7-alpine
+
+    # "command" = lệnh khởi động. Viết thành danh sách, mỗi mục là một "từ" của lệnh.
+    # "--appendonly yes" = ghi lại từng thao tác ra đĩa để dữ liệu không mất.
+    command: ["redis-server", "--appendonly", "yes"]
+
+    # "volumes" = các ổ lưu trữ gắn vào container (giống -v).
+    volumes:
+      # Nối ổ tên "du-lieu-redis" vào thư mục /data trong container.
+      # Tên này phải được khai báo ở mục "volumes:" ở cuối file.
+      - du-lieu-redis:/data
+
+    # "healthcheck" = cách kiểm tra sức khỏe. Cứ mỗi 5 giây, Docker chạy lệnh "redis-cli ping".
+    # Redis trả lời "PONG" nghĩa là khỏe.
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]   # lệnh dùng để hỏi thăm
+      interval: 5s                          # bao lâu hỏi một lần
+      timeout: 3s                           # chờ tối đa bao lâu cho một lần hỏi
+      retries: 10                           # sai liên tiếp mấy lần thì coi là "không khỏe"
+
+    restart: unless-stopped
+
+# "volumes" (ở sát lề trái) = khai báo các ổ lưu trữ sẽ được tạo.
+# Đây là chỗ "du-lieu-redis" được ra đời, thay cho "docker volume create".
+# Để trống sau dấu hai chấm nghĩa là dùng cấu hình mặc định.
+volumes:
+  du-lieu-redis:

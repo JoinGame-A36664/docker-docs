@@ -1,0 +1,14 @@
+body { font-family: system-ui, sans-serif; background: #f5f6f8; margin: 0; color: #222; }
+main { max-width: 560px; margin: 2rem auto; padding: 0 1rem; }
+h1 { margin-bottom: .25rem; }
+.phu { color: #666; font-size: .9rem; margin-top: 0; }
+form { display: flex; gap: .5rem; margin: 1rem 0; }
+input[type=text] { flex: 1; padding: .6rem; border: 1px solid #bbb; border-radius: 6px; font-size: 1rem; }
+button { padding: .6rem 1rem; border: 0; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; font-size: 1rem; }
+ul { list-style: none; padding: 0; }
+li { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: .6rem .8rem; border-radius: 6px; margin: .4rem 0; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+li.xong .tieu-de { text-decoration: line-through; color: #888; }
+li.trong { color: #777; justify-content: center; }
+.tieu-de { cursor: pointer; flex: 1; }
+button.xoa { background: #dc2626; padding: .3rem .7rem; font-size: .85rem; }
+#thong-bao { color: #b91c1c; min-height: 1.2rem; }

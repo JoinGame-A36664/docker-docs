@@ -1,0 +1,31 @@
+# =====================================================================
+# File bổ sung cho môi trường PHÁT TRIỂN (làm trên máy cá nhân)
+# =====================================================================
+# File này KHÔNG chạy một mình. Nó được "chồng" lên compose.yaml:
+#
+#   docker compose -f compose.yaml -f compose.dev.yaml up -d --build
+#
+# Quy tắc chồng file: mục nào trùng tên thì file SAU thắng (ghi đè); danh sách như "ports", "volumes" thì được CỘNG THÊM.
+# Nên ở đây chỉ viết những chỗ KHÁC so với bản chạy thật.
+# =====================================================================
+
+services:
+
+  # Giao diện: gắn thẳng thư mục giao diện trên máy vào nginx.
+  # Sửa HTML/CSS/JS, lưu lại, tải lại trình duyệt là thấy ngay, không cần đóng gói lại.
+  web:
+    volumes:
+      - ./ung-dung/frontend/public:/usr/share/nginx/html:ro
+
+  # API: gắn file app.py vào container và bật chế độ tự tải lại khi file đổi.
+  api:
+    volumes:
+      - ./ung-dung/api/app.py:/app/app.py:ro
+    # "command" ghi đè lệnh khởi động của Dockerfile; thêm --reload để gunicorn tự nạp lại khi code đổi.
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--worker-tmp-dir", "/dev/shm", "--reload", "app:app"]
+
+  # Cơ sở dữ liệu: mở cổng 5432 để bạn kết nối bằng công cụ trên máy (DBeaver, psql...).
+  # Chỉ mở cho CHÍNH MÁY BẠN (127.0.0.1), người khác trong mạng không vào được.
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"

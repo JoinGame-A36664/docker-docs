@@ -1,0 +1,123 @@
+# =====================================================================
+# MẪU quy trình tự động (CI) cho GitHub Actions
+# =====================================================================
+# File này là MẪU, chưa chạy. Muốn dùng: sao chép nó vào  .github/workflows/dong-goi.yml  ở GỐC repo
+# rồi sửa đường dẫn trong THU_MUC_DU_AN (và working-directory) cho đúng. Giải thích chi tiết ở ke-hoach/07-tu-dong-hoa-ci.md.
+#
+# Nó làm gì mỗi khi bạn đẩy code lên:
+#   Việc 1 "kiem-tra":  dựng cả hệ thống thật và thử gọi API. Hỏng là báo đỏ ngay.
+#   Việc 2 "dong-goi":  đóng gói 2 image (api, frontend) và, khi code vào nhánh main hoặc có tag v..., đẩy lên ghcr.io.
+# =====================================================================
+
+name: Kiem tra va dong goi          # tên hiện trong tab Actions của GitHub
+
+# "on" = khi nào chạy.
+on:
+  push:
+    branches: [main]                # mỗi lần đẩy code lên nhánh main
+    tags: ["v*"]                    # hoặc khi gắn nhãn phát hành, ví dụ v1.0.0
+  pull_request:
+    branches: [main]                # hoặc khi có người xin gộp code vào main
+
+# Quyền tối thiểu cho "chìa khóa" tự động của GitHub (GITHUB_TOKEN).
+permissions:
+  contents: read                    # được đọc code
+  packages: write                   # được đẩy image lên ghcr.io
+
+# Biến dùng chung cho mọi việc.
+env:
+  THU_MUC_DU_AN: thuc-hanh/du-an-2-dong-goi-web-hoan-chinh   # SỬA nếu bạn đặt dự án ở chỗ khác
+
+jobs:
+
+  # -------------------------------------------------------------------
+  # VIỆC 1: dựng cả hệ thống lên và thử
+  # -------------------------------------------------------------------
+  kiem-tra:
+    runs-on: ubuntu-latest          # chạy trên máy ảo Ubuntu do GitHub cho mượn
+    defaults:
+      run:
+        # Mọi lệnh "run" bên dưới chạy trong thư mục dự án.
+        # Chỗ này phải viết thẳng đường dẫn (GitHub không cho dùng biến "env" ở mục defaults). SỬA nếu bạn đặt dự án ở chỗ khác.
+        working-directory: thuc-hanh/du-an-2-dong-goi-web-hoan-chinh
+    steps:
+      # Bước 1: lấy code về máy ảo.
+      - uses: actions/checkout@v4
+
+      # Bước 2: tạo file cấu hình và mật khẩu giả cho lần thử (mật khẩu thật KHÔNG bao giờ để trong repo).
+      - name: Tao cau hinh thu nghiem
+        run: |
+          cp .env.example .env
+          sh bi-mat/tao-bi-mat.sh
+
+      # Bước 3: kiểm tra file compose có viết đúng không. -q = chỉ báo lỗi, không in nội dung.
+      - name: Kiem tra file compose
+        run: docker compose config -q
+
+      # Bước 4: đóng gói và chạy. --wait = đợi tới khi mọi dịch vụ "khỏe" mới đi tiếp (quá hạn là lỗi).
+      - name: Dung he thong
+        run: docker compose up -d --build --wait --wait-timeout 120
+
+      # Bước 5: thử thật. curl -f = nếu máy chủ trả về lỗi thì lệnh thất bại.
+      - name: Thu goi API qua nginx
+        run: |
+          curl -fsS http://localhost:8080/api/health
+          curl -fsS -X POST http://localhost:8080/api/tasks -H 'Content-Type: application/json' -d '{"title":"viec thu nghiem"}'
+          curl -fsS http://localhost:8080/api/tasks
+
+      # Bước 6: nếu có bước nào ở trên hỏng thì in nhật ký ra để biết vì sao. "if: failure()" = chỉ chạy khi có lỗi.
+      - name: In nhat ky khi that bai
+        if: failure()
+        run: docker compose logs --no-color --tail 100
+
+      # Bước 7: dọn dẹp. "if: always()" = chạy bất kể thành công hay thất bại.
+      - name: Don dep
+        if: always()
+        run: docker compose down -v
+
+  # -------------------------------------------------------------------
+  # VIỆC 2: đóng gói image và đẩy lên nơi lưu trữ (chỉ khi việc 1 thành công)
+  # -------------------------------------------------------------------
+  dong-goi:
+    needs: kiem-tra                 # chỉ chạy sau khi "kiem-tra" xong và thành công
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:                       # chạy việc này 2 lần: một lần với phan=api, một lần với phan=frontend
+        phan: [api, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Tên image trên ghcr.io bắt buộc viết chữ thường. Bước này đổi tên repo sang chữ thường.
+      - name: Tinh ten image
+        run: echo "TEN_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}-${{ matrix.phan }}" >> "$GITHUB_ENV"
+
+      # Chuẩn bị công cụ đóng gói hiện đại (BuildKit).
+      - uses: docker/setup-buildx-action@v3
+
+      # Đăng nhập ghcr.io, nhưng chỉ khi KHÔNG phải pull request (pull request không được phép đẩy image).
+      - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tự sinh các "nhãn phiên bản" cho image: tên nhánh, số phiên bản (khi gắn tag v1.2.3), và mã commit.
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.TEN_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha
+
+      # Đóng gói, và đẩy lên nếu không phải pull request.
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.THU_MUC_DU_AN }}/ung-dung/${{ matrix.phan }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha          # dùng lại "bộ nhớ nhanh" của lần chạy trước cho nhanh
+          cache-to: type=gha,mode=max

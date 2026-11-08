@@ -201,4 +201,4 @@ Mở trình duyệt vào `http://<IP_cua_bat_ky_node>:30080` (với kind, dùng 
 | `kubectl port-forward svc/web 8080:80` | Mở cổng từ máy bạn tới Service |
 | `kubectl config get-contexts` | Xem các cụm đang cấu hình |
 
-Gợi ý bước tiếp theo: chạy ứng dụng ở dự án thực hành ([`practice/`](../../practice/README.md)) trên kind bằng cách viết Deployment + Service cho từng thành phần. Đó là bài tập tự nhiên sau khi đã quen Compose.
+Gợi ý bước tiếp theo: chạy ứng dụng ở dự án thực hành ([`thuc-hanh/`](../../thuc-hanh/README.md)) trên kind bằng cách viết Deployment + Service cho từng thành phần. Đó là bài tập tự nhiên sau khi đã quen Compose.

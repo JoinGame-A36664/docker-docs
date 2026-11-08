@@ -1,0 +1,218 @@
+# =====================================================================
+# DỰ ÁN 2 - File Compose cho môi trường CHẠY THẬT (production-like)
+# Ứng dụng "Việc cần làm":  trình duyệt ─► web (nginx) ─► api (Flask) ─► db (PostgreSQL)
+# =====================================================================
+# Cách đọc YAML (nhắc lại 4 điều):
+#   1. Dòng bắt đầu bằng  #  là ghi chú.
+#   2. "tên: giá trị"  = đặt một thông số.
+#   3. THỤT LỀ 2 dấu cách (không dùng Tab) = "nằm bên trong" dòng phía trên.
+#   4. Dòng bắt đầu bằng  -  = một mục trong danh sách.
+#
+# Chuẩn bị trước khi chạy (một lần):
+#   cp .env.example .env                      (PowerShell: Copy-Item .env.example .env)
+#   sh bi-mat/tao-bi-mat.sh                   (PowerShell: ./bi-mat/tao-bi-mat.ps1)   -> tạo mật khẩu cơ sở dữ liệu
+# Chạy:       docker compose up -d --build
+# Kiểm tra:   docker compose ps       rồi mở  http://localhost:8080
+# Dừng:       docker compose down          (giữ dữ liệu)       docker compose down -v   (XÓA dữ liệu)
+# =====================================================================
+
+# Tên cả hệ thống. Là tiền tố cho tên container, mạng, ổ lưu trữ.
+name: viec-can-lam
+
+# ---------------------------------------------------------------------
+# Mẫu dùng chung: giới hạn dung lượng nhật ký (log) để không đầy ổ cứng.
+# "x-" ở đầu tên = Compose bỏ qua, đây chỉ là mẫu.  "&nhat-ky" = dán nhãn.  "<<: *nhat-ky" = chép mẫu vào.
+# ---------------------------------------------------------------------
+x-nhat-ky: &nhat-ky
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"   # mỗi file nhật ký tối đa 10 megabyte
+      max-file: "3"     # giữ 3 file, cũ hơn thì xóa
+
+services:
+
+  # ===================================================================
+  # 1) web - "lễ tân + giao diện". Nơi DUY NHẤT mở cổng ra ngoài.
+  # ===================================================================
+  web:
+    # Đóng gói image từ Dockerfile nằm trong thư mục này.
+    build: ./ung-dung/frontend
+
+    # Tên image. ${IMAGE_PREFIX:-} = phần đầu tên (ví dụ "ghcr.io/ten-ban/"), không đặt thì để trống.
+    # ${APP_VERSION:-1.0.0} = số phiên bản, không đặt thì dùng 1.0.0.
+    # Ghi số phiên bản vào tên image giúp biết đang chạy bản nào và quay lại bản cũ được.
+    image: ${IMAGE_PREFIX:-}viec-can-lam-web:${APP_VERSION:-1.0.0}
+
+    ports:
+      # Trái = cổng trên máy chủ, phải = cổng 80 trong nginx.
+      # Khi lên máy chủ thật, đặt HTTP_PORT=80 trong .env.
+      - "${HTTP_PORT:-8080}:80"
+
+    depends_on:
+      api:
+        # Chờ api báo "khỏe" rồi mới bật web.
+        condition: service_healthy
+
+    networks:
+      - khu-ngoai
+
+    restart: unless-stopped      # tắt bất ngờ thì tự bật lại (trừ khi chính bạn tắt)
+    <<: *nhat-ky                 # chép mẫu nhật ký ở trên vào đây
+
+    # Bảo vệ thêm: tiến trình trong container không được tự "nâng quyền".
+    security_opt:
+      - no-new-privileges:true
+
+    # Giới hạn tài nguyên: một container hỏng không được ngốn hết máy chủ.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"           # tối đa nửa lõi CPU (để trong ngoặc kép)
+          memory: 64M            # tối đa 64 megabyte bộ nhớ
+
+  # ===================================================================
+  # 2) api - phần xử lý. KHÔNG mở cổng ra ngoài; chỉ web gọi được.
+  # ===================================================================
+  api:
+    build: ./ung-dung/api
+    image: ${IMAGE_PREFIX:-}viec-can-lam-api:${APP_VERSION:-1.0.0}
+
+    # Các "tờ giấy dặn việc" truyền cho API.
+    environment:
+      DB_HOST: db                              # tên dịch vụ cơ sở dữ liệu ở bên dưới
+      DB_NAME: appdb
+      DB_USER: app
+      DB_PASSWORD_FILE: /run/secrets/db_password   # chỉ truyền ĐƯỜNG DẪN tới file mật khẩu, không truyền chính mật khẩu
+
+    # Nhận "bí mật" tên db_password. Nó xuất hiện dưới dạng một file trong container tại /run/secrets/db_password.
+    secrets:
+      - db_password
+
+    depends_on:
+      db:
+        condition: service_healthy               # chờ cơ sở dữ liệu sẵn sàng
+
+    networks:
+      - khu-ngoai      # để web gọi được api
+      - khu-trong      # để api gọi được db
+
+    restart: unless-stopped
+    <<: *nhat-ky
+
+    # --- Nhóm "khóa chặt" (hạn chế thiệt hại nếu api bị tấn công) ---
+    read_only: true            # hệ thống file chỉ đọc: kẻ xấu không ghi thêm file được
+    tmpfs:
+      - /tmp                   # nhưng cho một ngăn tạm nằm trong bộ nhớ, mất khi container tắt
+    cap_drop:
+      - ALL                    # bỏ toàn bộ "quyền đặc biệt" của Linux (api không cần cái nào)
+    security_opt:
+      - no-new-privileges:true
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 192M
+
+  # ===================================================================
+  # 3) db - cơ sở dữ liệu PostgreSQL. KHÔNG mở cổng ra ngoài; chỉ api gọi được.
+  # ===================================================================
+  db:
+    # Ghim phiên bản lớn 16, không dùng "latest" (đổi phiên bản lớn có thể làm hỏng dữ liệu cũ).
+    image: postgres:16-alpine
+
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_DB: appdb
+      # Postgres đọc mật khẩu từ file (đuôi _FILE), nên mật khẩu không hiện trong cấu hình hay lệnh docker inspect.
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+
+    secrets:
+      - db_password
+
+    volumes:
+      # Ổ lưu dữ liệu: xóa container, dữ liệu vẫn còn. Postgres lưu dữ liệu ở thư mục này.
+      - du-lieu-db:/var/lib/postgresql/data
+      # File tạo bảng: tự chạy MỘT LẦN, lần đầu khi ổ dữ liệu còn trống. ":ro" = chỉ đọc.
+      - ./ung-dung/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+
+    # Kiểm tra sức khỏe: lệnh pg_isready hỏi "bạn sẵn sàng nhận kết nối chưa?"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s        # 10 giây đầu chưa tính là thất bại (cho thời gian khởi động)
+
+    networks:
+      - khu-trong              # CHỈ ở khu trong: web không với tới được db
+
+    restart: unless-stopped
+    <<: *nhat-ky
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+
+  # ===================================================================
+  # 4) sao-luu - công việc chạy MỘT LẦN khi bạn gọi (không chạy cùng cả hệ thống)
+  #    Chạy:  docker compose --profile sao-luu run --rm sao-luu
+  # ===================================================================
+  sao-luu:
+    image: postgres:16-alpine
+
+    # "profiles" = dịch vụ chỉ được bật khi bạn chỉ định đúng tên profile.
+    # Nên "docker compose up" bình thường sẽ KHÔNG chạy dịch vụ này.
+    profiles:
+      - sao-luu
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    secrets:
+      - db_password
+
+    volumes:
+      - ./sao-luu:/sao-luu     # thư mục "sao-luu" trên máy bạn nhận các file sao lưu
+
+    networks:
+      - khu-trong
+
+    # Ghi đè lệnh khởi động mặc định của image để chạy một đoạn lệnh shell của mình.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        # Lưu ý: ký hiệu $$ viết đôi để Compose không tự thay, nó sẽ thành $ trong shell.
+        TEN_FILE="/sao-luu/appdb_$$(date +%Y%m%d_%H%M%S).sql"
+        PGPASSWORD="$$(cat /run/secrets/db_password)" pg_dump -h db -U app appdb > "$$TEN_FILE"
+        gzip "$$TEN_FILE"
+        echo "Da sao luu xong: $$TEN_FILE.gz"
+
+    restart: "no"              # chạy xong thì thôi, không tự bật lại
+
+# ---------------------------------------------------------------------
+# Mạng. Chia hai khu: khu ngoài (web, api) và khu trong (api, db, sao-luu).
+# ---------------------------------------------------------------------
+networks:
+  khu-ngoai:
+  khu-trong:
+
+# ---------------------------------------------------------------------
+# Ổ lưu trữ. "du-lieu-db" giữ toàn bộ dữ liệu PostgreSQL.
+# ---------------------------------------------------------------------
+volumes:
+  du-lieu-db:
+
+# ---------------------------------------------------------------------
+# Bí mật. Lấy từ file trên máy (file này KHÔNG được đưa lên git).
+# Tạo bằng:  sh bi-mat/tao-bi-mat.sh
+# ---------------------------------------------------------------------
+secrets:
+  db_password:
+    file: ./bi-mat/db_password.txt

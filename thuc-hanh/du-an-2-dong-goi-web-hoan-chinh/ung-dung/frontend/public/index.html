@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Việc cần làm</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Việc cần làm</h1>
+    <p class="phu">Giao diện (nginx) → API (Flask) → cơ sở dữ liệu (PostgreSQL), mỗi phần một container.</p>
+
+    <form id="form-them">
+      <input id="o-nhap" type="text" maxlength="200" placeholder="Hôm nay bạn cần làm gì?" required autofocus>
+      <button type="submit">Thêm</button>
+    </form>
+
+    <p id="thong-bao" role="status"></p>
+    <ul id="danh-sach"></ul>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
