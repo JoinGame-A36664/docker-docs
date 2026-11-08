@@ -24,15 +24,15 @@ ____
     - Rex-ray là một `Docker volume driver` hoạt động độc lập trên các máy chủ Docker với việc cài đặt khá đơn giản.
     - Rex-ray giao tiếp với `Storage Providers` để có thể quản lý các volume mong muốn.
 
-        > ![rexray-storage-provider.png](../../images/rexray-storage-provider.png)
+        > ![rexray-storage-provider.png](../../../images/rexray-storage-provider.png)
 
         được hỗ trợ trên nhiều nền tảng hệ điều hành:
 
-        > ![rexray-os-support.png](../../images/rexray-os-support.png)
+        > ![rexray-os-support.png](../../../images/rexray-os-support.png)
 
         và hỗ trợ container flatforms như:
 
-        > ![rexray-container-support.png](../../images/rexray-container-support.png)
+        > ![rexray-container-support.png](../../../images/rexray-container-support.png)
 
 - ### <a name="setting">2. Cài đặt Rex-ray</a>
 
@@ -58,9 +58,9 @@ ____
 
     - Sau khi đã cài đặt `VirtualBox` và tạo ra một máy ảo Docker (hệ điều hành Ubuntu) sử dụng VirtualBox. Ta cần tiến hành thực hiện cấu hình cho máy ảo Docker các yêu cầu bắt buộc sau:
 
-        > ![upload-ueditor-image-20171001-1506829653765023884](../../images/upload-ueditor-image-20171001-1506829653765023884.jpg)
+        > ![upload-ueditor-image-20171001-1506829653765023884](../../../images/upload-ueditor-image-20171001-1506829653765023884.jpg)
 
-        > ![upload-ueditor-image-20171001-1506829654049093873.jpg](../../images/upload-ueditor-image-20171001-1506829654049093873.jpg)
+        > ![upload-ueditor-image-20171001-1506829654049093873.jpg](../../../images/upload-ueditor-image-20171001-1506829654049093873.jpg)
 
     - Tiếp theo, ta thực hiện cài đặt Rex-ray trong Docker Host như bên trên và thực hiện cấu hình cho Rex-ray như sau:
 

@@ -19,13 +19,13 @@
 >
 > | Môi trường | Cách cài |
 > |---|---|
-> | Ubuntu 22.04/24.04, Debian 11/12 | Cách 1 (kho apt chính thức), hoặc chạy [`scripts/install-docker.sh`](../../scripts/install-docker.sh) |
+> | Ubuntu 22.04/24.04, Debian 11/12 | Cách 1 (kho apt chính thức), hoặc chạy [`scripts/install-docker.sh`](../../../scripts/install-docker.sh) |
 > | Rocky/AlmaLinux 8-9, RHEL, Fedora (thay thế CentOS 7) | Dùng `dnf` với kho `https://download.docker.com/linux/rhel/docker-ce.repo` (xem mục Cách 3) |
 > | Windows 10/11, macOS | Cách 2: Docker Desktop |
 > | Lab nhanh, máy thử nghiệm | Cách 3: script `get.docker.com` (cách gốc của tài liệu này) |
 
 ### Cách 1. Cài từ kho apt chính thức (Ubuntu/Debian, khuyến nghị)
-Các bước chi tiết nằm ở bài [Cài đặt docker](../docker-5m/01.Caidatdocker.md). Tóm tắt:
+Các bước chi tiết nằm ở bài [Cài đặt docker](../../docker-5m/01.Caidatdocker.md). Tóm tắt:
 
 ```sh
 sudo apt-get update && sudo apt-get install -y ca-certificates curl

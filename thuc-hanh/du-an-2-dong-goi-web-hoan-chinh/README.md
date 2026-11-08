@@ -42,7 +42,7 @@ Muốn sửa code và thấy ngay, xem [bước 3](ke-hoach/03-moi-truong-phat-t
 
 ## Kế hoạch 9 bước
 
-Đọc và làm theo thứ tự. Mỗi bước là một file trong thư mục [`ke-hoach/`](ke-hoach/). Mỗi file đều có: **mục tiêu**, **làm gì**, **kiểm tra**.
+Đọc và làm theo thứ tự. Mỗi bước là một file trong thư mục [`ke-hoach/`](ke-hoach). Mỗi file đều có: **mục tiêu**, **làm gì**, **kiểm tra**.
 
 | Bước | Tên | Câu hỏi mà bước này trả lời |
 |---|---|---|

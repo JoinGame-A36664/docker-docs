@@ -24,7 +24,7 @@ ____
 
     - Mô hình đơn giản như sau:
 
-    > ![docker-swarm-sample-model.png](../../images/docker-swarm-sample-model.png)
+    > ![docker-swarm-sample-model.png](../../../images/docker-swarm-sample-model.png)
 
     - Việc thực hiện cấu hình sử dụng ít nhất 3 node lần lượt đáp ứng yêu cầu theo bảng sau:
 
@@ -253,7 +253,7 @@ ____
 
     - Với Docker Swarm, ta có thể dễ dàng public port để có thể truy cập tới services từ bên ngoài. Tất cả các node đều được sử dụng `routing mesh`. `routing mesh` cho phép mỗi node trong swarm có thể chấp nhận các kết nối trên published port cho các service đang chạy trong swarm, ngay cả khi không có task nào đang chạy trên node. `routing mesh` sẽ định tuyến tất cả các request tới một node có container đang chạy.
 
-    > ![docker-swarm-docker-ingress.png](../../images/docker-swarm-docker-ingress.png)
+    > ![docker-swarm-docker-ingress.png](../../../images/docker-swarm-docker-ingress.png)
 
     Như vậy, ta có thể truy cập tới service theo bất kỳ địa chỉ IP của node nào.
 
@@ -271,7 +271,7 @@ ____
 
     - Sau khi chạy xong, ta có thể truy cập đến đường dẫn với port `ip_address:8080` để kiểm tra kết quả. Nếu cài đặt thành công, kết quả sẽ hiển thị tương tự như sau:
 
-        ![docker-visualizer.png](../../images/docker-visualizer.png)
+        ![docker-visualizer.png](../../../images/docker-visualizer.png)
 
 
 # Tài liệu tham khảo

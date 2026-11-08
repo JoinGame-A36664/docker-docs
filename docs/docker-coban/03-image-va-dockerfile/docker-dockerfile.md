@@ -202,7 +202,7 @@ ADD ["<src>",... "<dest>"] (this form is required for paths containing whitespac
 
 Note: If your URL files are protected using authentication, you will need to use RUN wget, RUN curl or use another tool from within the container as the ADD instruction does not support authentication.
 
-> **Cập nhật (2026):** khuyến nghị chính thức là **ưu tiên `COPY`**. Chỉ dùng `ADD` khi cần tự giải nén file `.tar` cục bộ. Với file từ URL, nên dùng `RUN curl ... ` kèm kiểm tra checksum hoặc dạng `ADD --checksum=sha256:... <url> <dest>`. Xem thêm bài tip [ADD với COPY](../docker-tips/docker-dockerfile-add-with-copy.md).
+> **Cập nhật (2026):** khuyến nghị chính thức là **ưu tiên `COPY`**. Chỉ dùng `ADD` khi cần tự giải nén file `.tar` cục bộ. Với file từ URL, nên dùng `RUN curl ... ` kèm kiểm tra checksum hoặc dạng `ADD --checksum=sha256:... <url> <dest>`. Xem thêm bài tip [ADD với COPY](../../docker-tips/docker-dockerfile-add-with-copy.md).
 
 - Các quy định:
   - The <src> path must be inside the context of the build: Có nghĩa là <src> phải nằm trong thư mục đang build (chứa dockerfiles).
@@ -369,7 +369,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 ```
 - Chỉ build tới một giai đoạn nhất định (hữu ích khi debug): `docker build --target build -t myapp:build .`
-- (Bài tip [Dockerfile multi](../docker-tips/docker-dockerfile-multi.md) trong repo nói về cách tổ chức **nhiều Dockerfile** cho nhiều dịch vụ, không phải multi-stage build.)
+- (Bài tip [Dockerfile multi](../../docker-tips/docker-dockerfile-multi.md) trong repo nói về cách tổ chức **nhiều Dockerfile** cho nhiều dịch vụ, không phải multi-stage build.)
 
 ## 3.20 BuildKit và buildx
 - **BuildKit** là bộ máy build mặc định của Docker hiện nay (từ Docker 23.0). Nhờ nó, các giai đoạn độc lập được build song song và cache hiệu quả hơn nhiều.

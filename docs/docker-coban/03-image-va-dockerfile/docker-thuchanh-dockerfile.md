@@ -1,4 +1,4 @@
-> **Cập nhật (2026):** trong bài này đã đổi `ubuntu:14.04` (hết hỗ trợ từ 2019) thành `ubuntu:24.04`, đổi `MAINTAINER` (deprecated) thành `LABEL maintainer=...`, và thêm cờ `-y` cho `apt-get install apache2` (bản gốc thiếu `-y` nên `docker build` sẽ dừng ở bước hỏi xác nhận và báo lỗi). Cú pháp `ENV KEY value` trong bài vẫn chạy được nhưng nên viết `ENV KEY=value`. Xem thêm các thực hành tốt ở bài [Dockerfile](docker-dockerfile.md) (mục 3.22) và bản script đã cập nhật [`scripts/dockerfile.sh`](../../scripts/dockerfile.sh).
+> **Cập nhật (2026):** trong bài này đã đổi `ubuntu:14.04` (hết hỗ trợ từ 2019) thành `ubuntu:24.04`, đổi `MAINTAINER` (deprecated) thành `LABEL maintainer=...`, và thêm cờ `-y` cho `apt-get install apache2` (bản gốc thiếu `-y` nên `docker build` sẽ dừng ở bước hỏi xác nhận và báo lỗi). Cú pháp `ENV KEY value` trong bài vẫn chạy được nhưng nên viết `ENV KEY=value`. Xem thêm các thực hành tốt ở bài [Dockerfile](docker-dockerfile.md) (mục 3.22) và bản script đã cập nhật [`scripts/dockerfile.sh`](../../../scripts/dockerfile.sh).
 
 # Thực hành dockerfile
 

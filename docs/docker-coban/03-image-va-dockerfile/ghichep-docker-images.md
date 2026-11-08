@@ -269,5 +269,5 @@ service docker restart
 >   "insecure-registries": ["172.16.69.239:5000"]
 > }
 > ```
-> rồi khởi động lại: `sudo systemctl restart docker`. Cách này chỉ dùng cho lab trong mạng nội bộ; môi trường thật nên bật TLS cho registry (xem bài [Private Registry](docker-deploy-private-registry.md)).
+> rồi khởi động lại: `sudo systemctl restart docker`. Cách này chỉ dùng cho lab trong mạng nội bộ; môi trường thật nên bật TLS cho registry (xem bài [Private Registry](../07-registry/docker-deploy-private-registry.md)).
 - Các thao tác pull và push image tương tự ở như là pull, push ở docker hub.

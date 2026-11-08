@@ -5,7 +5,7 @@ Chỉ **một ý**: dùng lệnh `docker run` để chạy một chương trình
 
 Chương trình bạn chạy là **nginx**, một phần mềm chuyên phát trang web. Bạn chưa phải viết gì cả.
 
-Đọc thêm nếu thích: [Cài đặt docker](../../../docs/docker-5m/01.Caidatdocker.md), [Docker image](../../../docs/docker-coban/ghichep-docker-images.md).
+Đọc thêm nếu thích: [Cài đặt docker](../../../docs/docker-5m/01.Caidatdocker.md), [Docker image](../../../docs/docker-coban/03-image-va-dockerfile/ghichep-docker-images.md).
 
 ## Làm theo
 

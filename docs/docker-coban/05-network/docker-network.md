@@ -242,7 +242,7 @@ I index.html [Modified] 1/1 100%
 
 #ra ngoài google gõ : http://localhost:5001/ hoặc 127.0.0.1:5001
 ```
-> ![docker-swarm-sample-model.png](../../images/docker-network/demo1.png)
+> ![docker-swarm-sample-model.png](../../../images/docker-network/demo1.png)
 ## 2. User-defined networks
 Ngoài việc sử dụng các network mặc định do docker cung cấp. Ta có thể tự định nghĩa ra các dải network phù hợp
 với công việc của mình.
@@ -371,7 +371,7 @@ PING 172.17.0.3 (172.17.0.3): 56 data bytes
 64 bytes from 172.17.0.3: seq=1 ttl=64 time=0.083 ms
 /# ping B2
 ```
-> ![docker-swarm-sample-model.png](../../images/docker-network/demo2.png)
+> ![docker-swarm-sample-model.png](../../../images/docker-network/demo2.png)
 ## 3. An overlay network with Docker Engine swarm mode
 - Overlay network là mạng có thể kết nối nhiều container trên các **Docker Engine** lại với nhau, trong môi trường cluster.
 - Swarm tạo ra overlay network chỉ available với các nodes bên trong swarm. Khi bạn tạo ra một service sử dụng overlay network, manager node sẽ tự động kế thừa overlay network tới các nodes chạy các service tasks.
@@ -926,4 +926,4 @@ round-trip min/avg/max = 0.091/0.180/0.399 ms
   - Các dịch vụ nội bộ (database, cache) **không cần `ports:` gì cả**: các container cùng network đã gọi được nhau bằng tên.
   - Muốn lọc lưu lượng tới container, đặt luật trong chuỗi `DOCKER-USER` của iptables (Docker không đụng tới chuỗi này).
 - Dùng `docker network create --internal mynet` để tạo network không có đường ra Internet (cho các container chỉ nói chuyện nội bộ).
-- Phần "container không ra được Internet" xem tip [iptables](../docker-tips/docker-containers-cant-access-the-internet-check-iptables.md).
+- Phần "container không ra được Internet" xem tip [iptables](../../docker-tips/docker-containers-cant-access-the-internet-check-iptables.md).

@@ -45,7 +45,7 @@ ____
 - Là một **plugin viết bằng Go** của Docker CLI. Lệnh: `docker compose ...`. Bản v1 (`docker-compose`) đã ngừng hỗ trợ từ tháng 7/2023.
 - Một đặc tả duy nhất, không còn phân biệt `2.x` và `3.x`. Mọi tính năng (`healthcheck`, `depends_on.condition`, `profiles`, `secrets`, `develop.watch`...) dùng được trên một máy đơn.
 - Các điểm mới đáng dùng ngay: `depends_on` + `service_healthy`, `docker compose watch`, `include`, `profiles`, file `.env`, `compose.override.yaml`.
-- Chi tiết: [Docker Compose](../docker-coban/docker-compose.md) và [Cách viết Compose file](../docker-coban/docker-dockercompose.md).
+- Chi tiết: [Docker Compose](../docker-coban/06-compose/docker-compose.md) và [Cách viết Compose file](../docker-coban/06-compose/docker-dockercompose.md).
 
 # <a name="build">3. Build image: BuildKit, buildx, đa kiến trúc</a>
 - **BuildKit** là bộ máy build mặc định (từ Docker 23.0): build song song, cache thông minh, có `--mount=type=cache` và `--mount=type=secret`.
@@ -54,7 +54,7 @@ ____
   docker buildx build --platform linux/amd64,linux/arm64 -t user/app:1.0 --push .
   ```
 - Hệ quả thực tế: nếu bạn dùng Mac chip M và máy chủ là x86, image build ra có thể **không chạy** ở máy chủ nếu quên `--platform`. Lỗi điển hình: `exec format error`.
-- **Multi-stage build** là kỹ thuật bắt buộc phải biết để có image nhỏ, xem mục 3.19 bài [Dockerfile](../docker-coban/docker-dockerfile.md).
+- **Multi-stage build** là kỹ thuật bắt buộc phải biết để có image nhỏ, xem mục 3.19 bài [Dockerfile](../docker-coban/03-image-va-dockerfile/docker-dockerfile.md).
 - `docker init` tạo sẵn Dockerfile, `.dockerignore`, `compose.yaml` cho dự án của bạn.
 
 # <a name="supply">4. Bảo mật chuỗi cung ứng: quét lỗ hổng, SBOM, ký image</a>
@@ -85,7 +85,7 @@ docker run -d --name web \
 | `--cap-drop ALL` | Bỏ toàn bộ Linux capability (thêm lại từng cái cần bằng `--cap-add`) |
 | `--security-opt no-new-privileges` | Tiến trình con không leo thang đặc quyền |
 | `--memory`, `--cpus`, `--pids-limit` | Chặn một container ngốn hết tài nguyên máy chủ |
-| `-p 127.0.0.1:...` | Chỉ mở cổng ở localhost (xem mục bảo mật trong bài [Network](../docker-coban/docker-network.md)) |
+| `-p 127.0.0.1:...` | Chỉ mở cổng ở localhost (xem mục bảo mật trong bài [Network](../docker-coban/05-network/docker-network.md)) |
 
 Trong Compose các cờ này là `user`, `read_only`, `tmpfs`, `cap_drop`, `security_opt`, `deploy.resources`, `pids_limit`. Cũng đừng bao giờ: mount `/var/run/docker.sock` vào container không tin cậy, dùng `--privileged` cho ứng dụng bình thường, hay đưa mật khẩu vào image.
 
@@ -102,7 +102,7 @@ Muốn an toàn hơn nữa ở mức daemon: **Rootless mode** (xem tip [chạy 
 # <a name="k8s">7. Kubernetes không còn dùng Docker Engine trực tiếp</a>
 - Từ Kubernetes 1.24, `dockershim` bị gỡ bỏ. Runtime là **containerd** hoặc **CRI-O**. Image bạn build bằng Docker vẫn chạy bình thường vì cùng chuẩn OCI.
 - Cài và dùng thử: bài [Kubernetes hiện nay](docker-kubernetes-hien-nay.md) (kind, kubeadm, Deployment đầu tiên).
-- Docker Swarm vẫn còn nhưng ít được phát triển thêm; xem nhận định ở cuối bài [Giới thiệu Docker Swarm](../docker-coban/docker-swarm-about.md).
+- Docker Swarm vẫn còn nhưng ít được phát triển thêm; xem nhận định ở cuối bài [Giới thiệu Docker Swarm](../docker-coban/08-swarm/docker-swarm-about.md).
 
 # <a name="next">8. Nên học gì tiếp theo</a>
 1. Làm trọn hai dự án trong [`thuc-hanh/`](../../thuc-hanh/README.md): Dự án 1 (6 giai đoạn) rồi Dự án 2 (kế hoạch đóng gói một web hoàn chỉnh).

@@ -19,7 +19,7 @@ docker run ubuntu
 
 Ví dụ:
 
-![docker_run](../images/docker_run.png)
+![docker_run](../../../images/docker_run.png)
 
 Đặt tên cho một container khi khởi tạo, thêm tham số `--name`
 ```sh

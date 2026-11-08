@@ -27,7 +27,7 @@ sudo ufw allow 80/tcp         # web (HTTP)
 sudo ufw allow 443/tcp        # sau này dùng cho HTTPS
 sudo ufw enable
 ```
-**Bẫy quan trọng:** Docker tự thêm luật riêng và **đi trước `ufw`**. Cổng nào bạn đã `ports:` trong Compose đều có thể mở ra Internet dù `ufw` chặn. Vì vậy dự án chỉ cho `web` có `ports:`, và `db` không bao giờ có. Đọc thêm mục "Lưu ý bảo mật: Docker và tường lửa" trong bài [Network](../../../docs/docker-coban/docker-network.md).
+**Bẫy quan trọng:** Docker tự thêm luật riêng và **đi trước `ufw`**. Cổng nào bạn đã `ports:` trong Compose đều có thể mở ra Internet dù `ufw` chặn. Vì vậy dự án chỉ cho `web` có `ports:`, và `db` không bao giờ có. Đọc thêm mục "Lưu ý bảo mật: Docker và tường lửa" trong bài [Network](../../../docs/docker-coban/05-network/docker-network.md).
 
 ### 8.4 Đưa dự án lên máy chủ
 Có hai cách. Cách A đơn giản nhất cho người mới:

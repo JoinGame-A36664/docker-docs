@@ -37,7 +37,7 @@ ____
 > **Bổ sung (2026):** ngoài iptables, các nguyên nhân thường gặp khác:
 > - **DNS**: ping được IP (`ping 8.8.8.8`) nhưng không ping được tên miền → lỗi DNS. Thử chạy container với DNS chỉ định: `docker run --dns 1.1.1.1 ...`, hoặc đặt cố định trong `/etc/docker/daemon.json`: `{"dns": ["1.1.1.1", "8.8.8.8"]}` rồi `sudo systemctl restart docker`.
 > - **IP forwarding** bị tắt: kiểm tra `sysctl net.ipv4.ip_forward` phải bằng `1`.
-> - **ufw** chặn chuyển tiếp: đặt `DEFAULT_FORWARD_POLICY="ACCEPT"` trong `/etc/default/ufw` (lưu ý Docker vốn đã bỏ qua `ufw` ở chiều publish port, xem mục "Lưu ý bảo mật" trong bài [Network](../docker-coban/docker-network.md)).
+> - **ufw** chặn chuyển tiếp: đặt `DEFAULT_FORWARD_POLICY="ACCEPT"` trong `/etc/default/ufw` (lưu ý Docker vốn đã bỏ qua `ufw` ở chiều publish port, xem mục "Lưu ý bảo mật" trong bài [Network](../docker-coban/05-network/docker-network.md)).
 > - **Trùng dải mạng**: dải mặc định `172.17.0.0/16` của Docker đụng với mạng VPN / công ty. Đổi trong `daemon.json`: `{"default-address-pools":[{"base":"10.200.0.0/16","size":24}]}`.
 > - Hệ thống mới dùng **nftables** thay cho iptables: lệnh `sudo iptables -L` có thể là lớp tương thích (`iptables-nft`); dùng `sudo nft list ruleset` để xem đầy đủ.
 > - Docker Desktop: máy ảo nội bộ có mạng riêng; lỗi mạng thường do VPN / proxy của công ty, kiểm tra Settings > Resources > Network / Proxies.

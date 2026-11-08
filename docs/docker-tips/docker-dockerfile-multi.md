@@ -58,7 +58,7 @@ Các dự án nhỏ hơn có thể dễ dàng tổ chức được không? Bạn
 
 
 
-> **Bổ sung (2026):** bỏ dòng `version: '3'` trong các file compose ở trên, Compose hiện nay không cần nữa. Lưu ý đừng nhầm bài này (tổ chức **nhiều Dockerfile** cho nhiều dịch vụ) với **multi-stage build** (nhiều `FROM` trong **một** Dockerfile để image cuối nhỏ gọn). Multi-stage được trình bày ở mục 3.19 của bài [Dockerfile](../docker-coban/docker-dockerfile.md).
+> **Bổ sung (2026):** bỏ dòng `version: '3'` trong các file compose ở trên, Compose hiện nay không cần nữa. Lưu ý đừng nhầm bài này (tổ chức **nhiều Dockerfile** cho nhiều dịch vụ) với **multi-stage build** (nhiều `FROM` trong **một** Dockerfile để image cuối nhỏ gọn). Multi-stage được trình bày ở mục 3.19 của bài [Dockerfile](../docker-coban/03-image-va-dockerfile/docker-dockerfile.md).
 
 ____
 

@@ -38,7 +38,7 @@ ____
 
     - Không có vấn đề nào xảy ra khi ta lựa chọn cách chia sẻ dữ liệu để sử dụng, vì các dữ liệu đều giống nhau trong container. Chúng được quy định giống như một thư mục hoặc một file trong filesystem của containers. Sự khác biệt giữa `volumes`, `bind mounts` và `tmpfs mounts` chỉ đơn giản là khác nhau về vị trí lưu trữ dữ liệu trên Docker host.
 
-        > ![types-of-mounts.png](../../images/types-of-mounts.png)
+        > ![types-of-mounts.png](../../../images/types-of-mounts.png)
 
     - Hình ảnh trên mô tả vị trí lưu trữ dữ liệu của container trên Docker host. Theo đó, ta có thể thấy được:
 
@@ -156,7 +156,7 @@ ____
 
 # Bổ sung 2026: volume trong Compose, backup, và lưu ý nền tảng
 
-- **Volume trong Docker Compose**: khai báo `volumes:` ở cấp cao nhất rồi gắn vào service (xem ví dụ trong bài [Docker Compose](docker-compose.md)). Compose đặt tên volume theo dạng `<tên project>_<tên volume>`. `docker compose down` **không** xóa volume; chỉ `docker compose down -v` mới xóa.
+- **Volume trong Docker Compose**: khai báo `volumes:` ở cấp cao nhất rồi gắn vào service (xem ví dụ trong bài [Docker Compose](../06-compose/docker-compose.md)). Compose đặt tên volume theo dạng `<tên project>_<tên volume>`. `docker compose down` **không** xóa volume; chỉ `docker compose down -v` mới xóa.
 - **Sao lưu một named volume** bằng một container tạm, nén dữ liệu ra thư mục hiện tại của host:
 
         docker run --rm -v myvol2:/data -v "$(pwd)":/backup alpine \

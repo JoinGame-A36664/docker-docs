@@ -2,8 +2,8 @@
 
 > **Cập nhật (2026):** những điểm khác biệt chính với thời điểm viết bài gốc:
 > - Cú pháp theo nhóm đối tượng là chuẩn mới: `docker container run`, `docker container ls`, `docker image ls`, `docker image rm`... Các lệnh ngắn cũ (`docker run`, `docker ps`, `docker images`, `docker rmi`) vẫn chạy bình thường nên bài này giữ nguyên.
-> - `--link` là cơ chế **legacy**. Hãy tạo một **user-defined network** rồi cho các container tham gia network đó, chúng tự gọi nhau bằng tên (xem bài [Network trong Docker](docker-network.md)).
-> - `docker-compose` (v1) đã thay bằng `docker compose` (v2), xem bài [Docker Compose](docker-compose.md).
+> - `--link` là cơ chế **legacy**. Hãy tạo một **user-defined network** rồi cho các container tham gia network đó, chúng tự gọi nhau bằng tên (xem bài [Network trong Docker](../05-network/docker-network.md)).
+> - `docker-compose` (v1) đã thay bằng `docker compose` (v2), xem bài [Docker Compose](../06-compose/docker-compose.md).
 > - Cuối bài có mục "Nhóm lệnh bổ sung" gồm `docker system`, `docker buildx`, `docker context`, `docker scout`...
 
 ____

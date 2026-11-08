@@ -1,11 +1,11 @@
 > **Cập nhật (2026):** bài gốc dựng cụm Swarm trên **CentOS 7** và **Ubuntu 16.04**, đều đã hết hỗ trợ. Khi làm theo, hãy lưu ý:
-> - Thay hệ điều hành bằng Ubuntu 22.04/24.04 hoặc Rocky/AlmaLinux 9, và cài Docker theo bài [Cài đặt Docker](docker-thuchanh-caidat.md) (không dùng lệnh `yum`/`apt-key` cũ).
+> - Thay hệ điều hành bằng Ubuntu 22.04/24.04 hoặc Rocky/AlmaLinux 9, và cài Docker theo bài [Cài đặt Docker](../01-cai-dat/docker-thuchanh-caidat.md) (không dùng lệnh `yum`/`apt-key` cũ).
 > - Dòng `sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' ...` trong bài **không nên áp dụng** ngoài môi trường thử nghiệm. SELinux là lớp bảo vệ quan trọng; Docker trên RHEL/Rocky đã có chính sách SELinux đi kèm. Chỉ tắt khi bạn hiểu rõ rủi ro.
 > - Với tường lửa, thay vì tắt hẳn `firewalld`/`ufw`, hãy mở đúng các cổng Swarm cần: `2377/tcp` (quản lý cụm), `7946/tcp` và `7946/udp` (phát hiện node), `4789/udp` (overlay network VXLAN). Ví dụ `ufw allow 2377/tcp`, `ufw allow 7946`, `ufw allow 4789/udp`.
 > - `docker-compose` 1.18 (tải bằng `curl`) thay bằng `docker compose` (plugin). Triển khai nhiều service lên Swarm bằng `docker stack deploy -c compose.yaml ten_stack`; file compose không cần `version:`.
 > - `docker swarm init --advertise-addr` giờ nên chỉ định địa chỉ IP (hoặc tên card) của mạng nội bộ. Nếu máy chủ có nhiều card mạng, thiếu tham số này sẽ báo lỗi.
 > - Token `SWMTKN-...` trong các kết quả mẫu chỉ là ví dụ; mỗi cụm có token riêng và token là bí mật. Xem lại bằng `docker swarm join-token worker`.
-> - Image `web_server` trong bài được chuyển giữa các node bằng `docker save` / `docker load`; cách chuẩn hiện nay là đẩy image lên **registry** (xem [Private Registry](docker-deploy-private-registry.md)) rồi để các node tự `pull`.
+> - Image `web_server` trong bài được chuyển giữa các node bằng `docker save` / `docker load`; cách chuẩn hiện nay là đẩy image lên **registry** (xem [Private Registry](../07-registry/docker-deploy-private-registry.md)) rồi để các node tự `pull`.
 
 # Hướng dẫn cài đặt Docker Swarm
 

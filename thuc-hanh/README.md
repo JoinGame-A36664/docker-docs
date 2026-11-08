@@ -43,7 +43,7 @@ thuc-hanh/
 
 ## Chuẩn bị (làm một lần)
 
-1. Cài Docker: xem [Hướng dẫn cài đặt Docker](../docs/docker-coban/docker-thuchanh-caidat.md). Nếu dùng Windows 10/11 hoặc macOS, cài **Docker Desktop** rồi mở nó lên, đợi đến khi báo "đang chạy".
+1. Cài Docker: xem [Hướng dẫn cài đặt Docker](../docs/docker-coban/01-cai-dat/docker-thuchanh-caidat.md). Nếu dùng Windows 10/11 hoặc macOS, cài **Docker Desktop** rồi mở nó lên, đợi đến khi báo "đang chạy".
 2. Mở **một cửa sổ dòng lệnh** (Terminal, PowerShell, hoặc Ubuntu trong WSL) và kiểm tra:
    ```sh
    docker --version
@@ -53,4 +53,4 @@ thuc-hanh/
 3. Dùng **Windows PowerShell** thì để ý: vài lệnh viết hơi khác bash. Các bài có ghi rõ chỗ khác.
 
 ## Muốn đọc thêm lý thuyết?
-Khi gặp từ lạ, xem [Từ điển dễ hiểu](00-tu-dien-de-hieu.md). Muốn hiểu sâu hơn thì quay lại phần tài liệu trong thư mục [`docs/`](../docs/); mỗi giai đoạn có ghi bài tương ứng.
+Khi gặp từ lạ, xem [Từ điển dễ hiểu](00-tu-dien-de-hieu.md). Muốn hiểu sâu hơn thì quay lại phần tài liệu trong thư mục [`docs/`](../docs); mỗi giai đoạn có ghi bài tương ứng.

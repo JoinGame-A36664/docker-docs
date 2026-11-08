@@ -33,7 +33,7 @@ Mỗi giai đoạn giải quyết **vấn đề còn lại của giai đoạn tr
 | 5 | `giai-doan-5-them-nginx` | Thêm nginx làm "lễ tân", chia mạng, chỉ mở một cửa | Chưa biết cách theo dõi, sửa lỗi, dọn dẹp |
 | 6 | `giai-doan-6-van-hanh` | Xem log, giới hạn tài nguyên, sửa code thấy ngay, dọn dẹp | (Xong dự án 1. Sang dự án 2.) |
 
-Mã nguồn ứng dụng nằm ở thư mục [`ung-dung/`](ung-dung/). **Bạn không cần biết Python và không phải sửa code.** Chỉ khi muốn thì mở ra đọc.
+Mã nguồn ứng dụng nằm ở thư mục [`ung-dung/`](ung-dung). **Bạn không cần biết Python và không phải sửa code.** Chỉ khi muốn thì mở ra đọc.
 
 ## Quy ước trong các bài
 

@@ -1,6 +1,6 @@
 # Kubernetes hiện nay: kind, kubeadm và Deployment đầu tiên
 
-> Bài bổ sung (2026), thay cho cách cài cũ trong [Hướng dẫn cài đặt Kubernetes](../docker-coban/docker-thuchanh-caidat-kubernetes.md). Bài giữ nguyên bố cục "môi trường lab → cài đặt → tạo pod" của bài gốc.
+> Bài bổ sung (2026), thay cho cách cài cũ trong [Hướng dẫn cài đặt Kubernetes](../docker-coban/09-kubernetes/docker-thuchanh-caidat-kubernetes.md). Bài giữ nguyên bố cục "môi trường lab → cài đặt → tạo pod" của bài gốc.
 
 ____
 

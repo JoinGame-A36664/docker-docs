@@ -5,7 +5,7 @@ Chỉ **một ý**: thay cả đống lệnh dài của giai đoạn 3 bằng **
 
 Hình dung: giai đoạn 3 là bạn đứng dặn thợ từng việc một. Giai đoạn 4 là bạn đưa cho thợ **bản kế hoạch có đủ mọi thứ**, thợ cứ thế làm.
 
-Đọc thêm nếu thích: [Docker Compose](../../../docs/docker-coban/docker-compose.md).
+Đọc thêm nếu thích: [Docker Compose](../../../docs/docker-coban/06-compose/docker-compose.md).
 
 ## Làm theo
 

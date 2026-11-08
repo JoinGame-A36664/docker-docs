@@ -7,7 +7,7 @@ Hai ý, đi cùng nhau:
 
 Ví dụ đời thường: một tòa nhà văn phòng. Khách chỉ gặp **lễ tân** ở sảnh (khu ngoài). **Phòng làm việc** (web) và **phòng hồ sơ** (redis) nằm bên trong. Lễ tân dẫn khách vào phòng làm việc, nhưng khách không thể tự đi thẳng vào phòng hồ sơ.
 
-Đọc thêm nếu thích: [Network trong Docker](../../../docs/docker-coban/docker-network.md) (nhất là mục "Lưu ý bảo mật: Docker và tường lửa").
+Đọc thêm nếu thích: [Network trong Docker](../../../docs/docker-coban/05-network/docker-network.md) (nhất là mục "Lưu ý bảo mật: Docker và tường lửa").
 
 ## Làm theo
 

@@ -91,5 +91,5 @@ docker image prune                     # xóa các image "mồ côi" không còn
 ## Bài tập thêm (nếu còn hứng)
 1. Đổi tiêu đề và cổng chỉ bằng file `.env`, không sửa `compose.yaml`.
 2. Nâng giới hạn bộ nhớ của `web` lên 256M, chạy lại và kiểm tra bằng `docker stats`.
-3. Thử đóng gói theo cách "nhiều giai đoạn" (multi-stage) để image nhỏ hơn: xem mục 3.19 trong [bài Dockerfile](../../../docs/docker-coban/docker-dockerfile.md).
+3. Thử đóng gói theo cách "nhiều giai đoạn" (multi-stage) để image nhỏ hơn: xem mục 3.19 trong [bài Dockerfile](../../../docs/docker-coban/03-image-va-dockerfile/docker-dockerfile.md).
 4. Quét lỗ hổng của image: `docker scout quickview so-luu-but-web:1.0` (hoặc dùng Trivy).

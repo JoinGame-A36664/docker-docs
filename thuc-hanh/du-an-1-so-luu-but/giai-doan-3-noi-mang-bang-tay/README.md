@@ -7,7 +7,7 @@ Hai ý, nhưng gắn liền nhau:
 
 Giai đoạn này cố ý bắt bạn **gõ lệnh bằng tay**. Bạn sẽ thấy nó dài và dễ sai. Đó là để giai đoạn 4 trông thật "đã" khi mọi thứ gói gọn trong một file.
 
-Đọc thêm nếu thích: [Network trong Docker](../../../docs/docker-coban/docker-network.md), [Volume trong Docker](../../../docs/docker-coban/docker-volume.md).
+Đọc thêm nếu thích: [Network trong Docker](../../../docs/docker-coban/05-network/docker-network.md), [Volume trong Docker](../../../docs/docker-coban/04-volume-va-du-lieu/docker-volume.md).
 
 > Cần có sẵn image `so-luu-but-web:1.0` từ giai đoạn 2. Kiểm tra bằng `docker images so-luu-but-web`. Chưa có thì quay lại giai đoạn 2.
 

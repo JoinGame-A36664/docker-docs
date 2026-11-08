@@ -3,7 +3,7 @@
 ## Ở giai đoạn này bạn học gì?
 Chỉ **một ý**: viết một **Dockerfile** (công thức), rồi dùng nó để làm ra một **image** (khuôn) chứa ứng dụng sổ lưu bút. Sau đó chạy một container từ image đó.
 
-Đọc thêm nếu thích: [Viết Dockerfile để build image](../../../docs/docker-coban/docker-dockerfile.md).
+Đọc thêm nếu thích: [Viết Dockerfile để build image](../../../docs/docker-coban/03-image-va-dockerfile/docker-dockerfile.md).
 
 ## Làm theo
 

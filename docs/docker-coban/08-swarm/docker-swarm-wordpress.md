@@ -1,4 +1,4 @@
-> **Cập nhật (2026):** file stack trong bài dùng `version: '3.1'`; khi chạy `docker stack deploy` có thể bỏ dòng này. Image `mysql:5.7` đã hết hỗ trợ, dùng `mysql:8.0`. Nhớ rằng `docker stack deploy` không build image và chỉ đọc các khóa dành cho Swarm trong `deploy:`, xem tip [Compose và Stack](../docker-tips/docker-compose-vs-stack.md).
+> **Cập nhật (2026):** file stack trong bài dùng `version: '3.1'`; khi chạy `docker stack deploy` có thể bỏ dòng này. Image `mysql:5.7` đã hết hỗ trợ, dùng `mysql:8.0`. Nhớ rằng `docker stack deploy` không build image và chỉ đọc các khóa dành cho Swarm trong `deploy:`, xem tip [Compose và Stack](../../docker-tips/docker-compose-vs-stack.md).
 
 ## Thực hành với docker swarm 
 
