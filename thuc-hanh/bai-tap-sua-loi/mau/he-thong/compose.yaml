@@ -1,0 +1,105 @@
+# =====================================================================
+# GIAI ĐOẠN 6: Bản hoàn chỉnh của dự án 1 - thêm giới hạn tài nguyên,
+#              giới hạn dung lượng nhật ký, và chế độ "sửa code thấy ngay"
+# =====================================================================
+# File này = file giai đoạn 5 + vài mục MỚI. Chỗ MỚI đều có ghi "MỚI".
+# Cách đọc YAML: # là ghi chú; "tên: giá trị"; thụt lề 2 dấu cách = nằm bên trong; dấu "-" = một mục trong danh sách.
+# Chạy:  docker compose up -d --build        Dừng:  docker compose down
+# Chế độ sửa code thấy ngay:  docker compose watch
+# =====================================================================
+
+name: loi-lab
+
+# MỚI: "x-nhat-ky" là một đoạn cấu hình viết MỘT LẦN rồi dùng lại nhiều chỗ.
+# Tên bắt đầu bằng "x-" là quy ước để Compose bỏ qua nó (nó không phải dịch vụ).
+# "&nhat-ky" đặt cho đoạn này một cái nhãn tên là "nhat-ky". Chỗ nào ghi "<<: *nhat-ky" là lấy lại đoạn đó.
+x-nhat-ky: &nhat-ky
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m" # mỗi file nhật ký tối đa 10 megabyte
+      max-file: "3" # giữ tối đa 3 file, cũ hơn thì xóa. Tổng tối đa khoảng 30 MB mỗi container
+
+services:
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      web:
+        condition: service_healthy
+    networks:
+      - khu-ngoai
+    restart: unless-stopped
+    <<: *nhat-ky # MỚI: lấy lại đoạn cấu hình nhật ký ở trên
+
+    # MỚI: "deploy.resources.limits" = mức tối đa được dùng, để một container hỏng không ngốn hết máy.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25" # tối đa một phần tư lõi CPU. Nhớ để trong ngoặc kép
+          memory: 64M # tối đa 64 megabyte bộ nhớ
+
+  web:
+    build: ../ung-dung
+    image: loi-lab-web:1.0
+    environment:
+      REDIS_HOST: redis
+      APP_TITLE: ${APP_TITLE:-Sổ lưu bút Docker}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - khu-ngoai
+      - khu-trong
+    restart: unless-stopped
+    <<: *nhat-ky
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+
+    # MỚI: "develop.watch" = chế độ theo dõi file. Dùng với lệnh:  docker compose watch
+    # Mỗi mục trong "watch" là một luật: "nếu file này đổi thì làm việc kia".
+    develop:
+      watch:
+        # Luật 1: file app.py đổi -> chép vào container rồi khởi động lại web.
+        - action: sync+restart
+          path: ../ung-dung/app.py # file trên máy bạn (tính từ chỗ đặt file compose.yaml)
+          target: /app/app.py # chỗ cần chép tới bên trong container
+        # Luật 2: danh sách thư viện đổi -> phải đóng gói lại image (vì cần cài thư viện mới).
+        - action: rebuild
+          path: ../ung-dung/requirements.txt
+
+  redis:
+    image: redis:7-alpine
+    command: [ "redis-server", "--appendonly", "yes" ]
+    volumes:
+      - du-lieu-redis:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - khu-trong
+    restart: unless-stopped
+    <<: *nhat-ky
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+
+networks:
+  khu-ngoai:
+  khu-trong:
+
+volumes:
+  du-lieu-redis:
