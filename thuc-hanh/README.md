@@ -17,8 +17,12 @@ thuc-hanh/
 │   ├── giai-doan-6-van-hanh/
 │   └── ung-dung/                   ← mã nguồn của ứng dụng (dùng chung cho cả 6 giai đoạn)
 │
-└── du-an-2-dong-goi-web-hoan-chinh/ ← DỰ ÁN 2: kế hoạch đóng gói MỘT WEB ĐẦY ĐỦ (giao diện + máy chủ + cơ sở dữ liệu)
+├── du-an-2-dong-goi-web-hoan-chinh/ ← DỰ ÁN 2: kế hoạch đóng gói MỘT WEB ĐẦY ĐỦ (giao diện + máy chủ + cơ sở dữ liệu)
+│
+└── bai-tap-sua-loi/                ← BÀI TẬP SỬA LỖI: script tự phá một bản sao hệ thống, bạn tự tìm lỗi và sửa
 ```
+
+**Bài tập sửa lỗi** ([bai-tap-sua-loi/README.md](bai-tap-sua-loi/README.md)) nên làm sau dự án 1, và có thể làm xen kẽ với dự án 2. Khi gặp lỗi thật ngoài đời, kỹ năng đó quý hơn cả việc thuộc lệnh.
 
 ## Dự án 1 và dự án 2 khác nhau thế nào?
 

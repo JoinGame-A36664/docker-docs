@@ -112,4 +112,6 @@ Mục lục các tips: [docs/docker-tips/readme.md](/docs/docker-tips/readme.md)
 [Dự án 1: Sổ lưu bút Docker, 6 giai đoạn từ `docker run` đến Docker Compose](/thuc-hanh/du-an-1-so-luu-but/README.md)
 
 [Dự án 2: Kế hoạch đóng gói một web hoàn chỉnh, 9 bước](/thuc-hanh/du-an-2-dong-goi-web-hoan-chinh/README.md)
+
+[Bài tập sửa lỗi: script tự phá hệ thống để bạn luyện tìm lỗi và sửa (11 đề)](/thuc-hanh/bai-tap-sua-loi/README.md)
 ---

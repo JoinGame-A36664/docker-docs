@@ -74,9 +74,11 @@ Mở file `ung-dung/Dockerfile` và đối chiếu với bảng này. Hãy hình
 **`.dockerignore` để làm gì?** Là danh sách những thứ **không** đem vào image, như `.git`, file tạm, file mật khẩu `.env`. Vừa nhẹ hơn, vừa không lỡ làm rò mật khẩu.
 
 ## Tự kiểm tra
-1. Tại sao `COPY requirements.txt` đứng trước `COPY app.py`?
+1. Tại sao `COPY requirements.txt` đứng trước `COPY app.py`? : COPY requirements.txt đứng trước COPY app.py vì hai lý do. Một, pip install cần có file danh sách thư viện trước. Hai, thư viện ít đổi còn code đổi liên tục: nhờ tách riêng, khi chỉ sửa code, Docker dùng lại lớp pip install (rất nặng) từ cache và chỉ làm lại lớp COPY app.py trở xuống. Nếu đảo ngược, mỗi lần sửa code đều phải cài lại toàn bộ thư viện.
 2. Cái gì xảy ra nếu bạn xóa dòng `USER app`? Container có chạy được không? Có còn an toàn như trước không?
+nếu xóa thì vẫn chạy được , nhưng với quyền root và dòng RUN chi tạo ra user chứ k dùng nó , nguy hiển , root sẻ sửa được code, cài thư viện lạ , bị chiến má chủ
 3. `EXPOSE 8000` có tự làm trình duyệt vào được cổng 8000 không? Điều gì mới làm được việc đó?
+đây chỉ là khai báo chưa thật sự làm , nếu muốn thì phải mở cổng lắng nghe và chuyển tiếp , ví dụ 8000:8000 là docker đang chiếm cổng 8000 của máy host và khi requet bằng local:8000 thì sẽ chuyển tiêos vào container đang lắng nghe cổng 8000 bê trong
 
 ## Dọn dẹp trước khi sang giai đoạn sau
 ```sh
